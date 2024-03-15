@@ -1,15 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 //roadInfo get the data in a collection n mongofdb size ? : and searsch by road inf !
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:osmflutter/map/search_example.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:search_map_place_updated/search_map_place_updated.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -49,9 +54,59 @@ class _MainExampleState extends State<OldMainExample>
   final ValueNotifier<int> mapRotate = ValueNotifier(0);
   RoadInfo? _roadInfo;
 
-  @override
+  //Google Maps Api
+
+
+  //Completer<GoogleMapController> _controller = Completer();
+
+  // Markers
+
+  List<Marker> myMarker = [];
+
+  List<Marker> markers = [];
+
+  dynamic  current_lat, current_lng;
+  bool check =false;
+
+  Future<void> getCurrentLocation() async {
+    print("--------Inside the get location method --------");
+
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((error, stackTrace) {});
+
+    Position position = await Geolocator.getCurrentPosition();
+
+    setState(() {
+      current_lat = position.latitude;
+      current_lng = position.longitude;
+
+      check=true;
+
+      print("Current Lat & Lng is: ");
+      print(current_lat);
+      print(current_lng);
+
+      myMarker.add(
+          Marker(
+            markerId: const MarkerId("First"),
+            position: LatLng(current_lng, current_lng),
+            infoWindow: const InfoWindow(title: "Current Location"),
+          ));
+
+    });
+
+  }
+
+
+
+      @override
   void initState() {
     super.initState();
+
+    //Getting user location
+
+    getCurrentLocation();
 
     controller = MapController.withPosition(
       initPosition: GeoPoint(
@@ -249,91 +304,97 @@ class _MainExampleState extends State<OldMainExample>
       body: Container(
         child: Stack(
           children: [
-            OSMFlutter(
-              controller: controller,
-              osmOption: OSMOption(
-                enableRotationByGesture: true,
-                zoomOption: ZoomOption(
-                  initZoom: 13,
-                  minZoomLevel: 3,
-                  maxZoomLevel: 19,
-                  stepZoom: 1.0,
-                ),
-                userLocationMarker: UserLocationMaker(
-                    personMarker: MarkerIcon(
-                      iconWidget: SizedBox(
-                        width: 32,
-                        height: 64,
-                        child: Image.asset(
-                          "assets/images/directionIcon.png",
-                          scale: .3,
-                        ),
-                      ),
-                    ),
-                    directionArrowMarker: MarkerIcon(
-                      iconWidget: SizedBox(
-                        width: 32,
-                        height: 64,
-                        child: Image.asset(
-                          "assets/images/directionIcon.png",
-                          scale: .3,
-                        ),
-                      ),
-                    )),
-                roadConfiguration: RoadOption(
-                  roadColor: Colors.blueAccent,
-                ),
-                markerOption: MarkerOption(
-                  defaultMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.home,
-                      color: Colors.orange,
-                      size: 32,
-                    ),
-                  ),
-                  advancedPickerMarker: MarkerIcon(
-                    icon: Icon(
-                      Icons.location_searching,
-                      color: Colors.green,
-                      size: 56,
-                    ),
-                  ),
-                ),
-                showContributorBadgeForOSM: false,
-                showDefaultInfoWindow: false,
-              ),
-              mapIsLoading: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text("Map is Loading.."),
-                  ],
-                ),
-              ),
-              onMapIsReady: (isReady) {
-                if (isReady) {
-                  print("map is ready");
-                }
-              },
-              onLocationChanged: (myLocation) {
-                print('user location :$myLocation');
-              },
-              onGeoPointClicked: (geoPoint) async {
-                if (geoPoint ==
-                    GeoPoint(
-                      latitude: 47.442475,
-                      longitude: 8.4680389,
-                    )) {
-                  final newGeoPoint = GeoPoint(
-                    latitude: 47.4517782,
-                    longitude: 8.4716146,
-                  );
-                }
-              },
-            ),
+            //Osm Code
+            // OSMFlutter(
+            //   controller: controller,
+            //   osmOption: OSMOption(
+            //     enableRotationByGesture: true,
+            //     zoomOption: ZoomOption(
+            //       initZoom: 13,
+            //       minZoomLevel: 3,
+            //       maxZoomLevel: 19,
+            //       stepZoom: 1.0,
+            //     ),
+            //     userLocationMarker: UserLocationMaker(
+            //         personMarker: MarkerIcon(
+            //           iconWidget: SizedBox(
+            //             width: 32,
+            //             height: 64,
+            //             child: Image.asset(
+            //               "assets/images/directionIcon.png",
+            //               scale: .3,
+            //             ),
+            //           ),
+            //         ),
+            //         directionArrowMarker: MarkerIcon(
+            //           iconWidget: SizedBox(
+            //             width: 32,
+            //             height: 64,
+            //             child: Image.asset(
+            //               "assets/images/directionIcon.png",
+            //               scale: .3,
+            //             ),
+            //           ),
+            //         )),
+            //     roadConfiguration: RoadOption(
+            //       roadColor: Colors.blueAccent,
+            //     ),
+            //     markerOption: MarkerOption(
+            //       defaultMarker: MarkerIcon(
+            //         icon: Icon(
+            //           Icons.home,
+            //           color: Colors.orange,
+            //           size: 32,
+            //         ),
+            //       ),
+            //       advancedPickerMarker: MarkerIcon(
+            //         icon: Icon(
+            //           Icons.location_searching,
+            //           color: Colors.green,
+            //           size: 56,
+            //         ),
+            //       ),
+            //     ),
+            //     showContributorBadgeForOSM: false,
+            //     showDefaultInfoWindow: false,
+            //   ),
+            //   mapIsLoading: Center(
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       crossAxisAlignment: CrossAxisAlignment.center,
+            //       children: [
+            //         CircularProgressIndicator(),
+            //         Text("Map is Loading.."),
+            //       ],
+            //     ),
+            //   ),
+            //   onMapIsReady: (isReady) {
+            //     if (isReady) {
+            //       print("map is ready");
+            //     }
+            //   },
+            //   onLocationChanged: (myLocation) {
+            //     print('user location :$myLocation');
+            //   },
+            //   onGeoPointClicked: (geoPoint) async {
+            //     if (geoPoint ==
+            //         GeoPoint(
+            //           latitude: 47.442475,
+            //           longitude: 8.4680389,
+            //         )) {
+            //       final newGeoPoint = GeoPoint(
+            //         latitude: 47.4517782,
+            //         longitude: 8.4716146,
+            //       );
+            //     }
+            //   },
+            // ),
+            //Google Maps Api code
+             check==true ? GoogleMap(initialCameraPosition: CameraPosition(
+              target: LatLng(current_lat,current_lng),
+              zoom: 14.5
+            )) : Center(child: CircularProgressIndicator(color: Colors.black,),),
             Positioned(
               bottom: 10,
               left: 10,

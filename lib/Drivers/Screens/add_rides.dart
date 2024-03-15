@@ -1,19 +1,19 @@
+import 'dart:async';
+
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/Drivers/widgets/proposed_rides.dart';
 import 'package:flutter/material.dart';
-import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
-import 'package:osmflutter/Users/widgets/chooseRide.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:intl/intl.dart';
 import 'package:osmflutter/map/home_example.dart';
+import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
 
 class AddRides extends StatefulWidget {
@@ -24,6 +24,153 @@ class AddRides extends StatefulWidget {
 }
 
 class _AddRidesState extends State<AddRides> {
+
+
+
+  //Google Maps For Home
+
+  var origin_address_name = 'Home';
+
+  void origin_address_method(dynamic newlat, dynamic newlng) async {
+    List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
+    setState(() {});
+    origin_address_name =
+    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+
+    print("Origin Name == ${origin_address_name}");
+  }
+
+  List<Marker> myMarker = [];
+
+  List<Marker> markers = [];
+
+  Completer<GoogleMapController> _controller = Completer();
+
+  dynamic  current_lat, current_lng;
+
+  Future<void> getCurrentLocation() async {
+    print("--------Inside the get location method --------");
+
+    await Geolocator.requestPermission()
+        .then((value) {
+    })
+        .onError((error, stackTrace) {});
+
+    Position position = await Geolocator.getCurrentPosition();
+
+
+    setState(() {
+      current_lat = position.latitude;
+      current_lng = position.longitude;
+
+      print("Current Lat & Lng is: ");
+      print(current_lat);
+      print(current_lng);
+
+      myMarker.add(
+          Marker(
+            markerId: const MarkerId("First"),
+            position: LatLng(current_lng, current_lng),
+            infoWindow: const InfoWindow(title: "Current Location"),
+          ));
+
+    });
+
+  }
+
+
+  google_map_for_origin(GoogleMapController? map_controller) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          final height = MediaQuery.of(context).size.height;
+          final width = MediaQuery.of(context).size.width;
+
+          return Dialog(
+            child: Stack(
+              children: [
+                Container(
+                  height: height * 0.7,
+                  width: width * 0.8,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.transparent,
+                  ),
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(current_lng,current_lng),
+                      zoom: 14,
+                    ),
+                    markers: Set<Marker>.of(myMarker),
+                    onMapCreated: (GoogleMapController controller) {
+                      // _controller.complete(controller);
+                      setState(() {
+                        map_controller = controller;
+                      });
+                    },
+                    onTap: (position) {
+                      mapGoogle(position);
+                      setState(() {});
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+                  child: SearchMapPlaceWidget(
+                      hasClearButton: true,
+                      iconColor: Colors.black,
+                      placeType: PlaceType.address,
+                      bgColor: Colors.white,
+                      textColor: Colors.black,
+                      placeholder: "Search Any Location",
+                      apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
+                      onSelected: (Place place) async {
+                        Geolocation? geo_location = await place.geolocation;
+                        print("running-----");
+                        map_controller!.animateCamera(
+                            CameraUpdate.newLatLng(geo_location?.coordinates));
+                        map_controller!.animateCamera(
+                            CameraUpdate.newLatLngBounds(
+                                geo_location?.bounds, 0));
+                      }),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  mapGoogle(position) async {
+    myMarker.clear();
+    current_lat = position.latitude;
+    current_lng = position.longitude;
+
+    Navigator.pop(context);
+    origin_address_method(current_lat, current_lng);
+    myMarker.add(Marker(
+      markerId: const MarkerId("First"),
+      position: LatLng(current_lat, current_lng),
+      infoWindow: const InfoWindow(title: "Origin Location"),
+    ));
+
+    print("After Selecting Origin: Lat & Lng is ");
+    print(current_lat);
+    print(current_lng);
+
+    setState(() {});
+    //Setting camera position in setstate
+    CameraPosition camera_position =
+    CameraPosition(target: LatLng(current_lat, current_lng), zoom: 14);
+
+    GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
+
+    // print("-----------Updated-----------");
+    // print(lat);
+    // print(lng);
+  }
 
   int selectedIndex = 0;
   DateTime now = DateTime.now();
@@ -55,16 +202,16 @@ class _AddRidesState extends State<AddRides> {
                 Expanded(
                     child: SfDateRangePicker(
                   view: DateRangePickerView.month,
-                  headerStyle: DateRangePickerHeaderStyle(
+                  headerStyle: const DateRangePickerHeaderStyle(
                     textStyle: TextStyle(color: colorsFile.icons),
                   ),
-                  monthViewSettings: DateRangePickerMonthViewSettings(
+                  monthViewSettings: const DateRangePickerMonthViewSettings(
                       weekendDays: [7, 6],
                       dayFormat: 'EEE',
                       viewHeaderStyle: DateRangePickerViewHeaderStyle(
                           textStyle: TextStyle(color: colorsFile.icons)),
                       showTrailingAndLeadingDates: true),
-                  monthCellStyle: DateRangePickerMonthCellStyle(
+                  monthCellStyle: const DateRangePickerMonthCellStyle(
                     textStyle: TextStyle(color: colorsFile.icons),
                   ),
                 )),
@@ -79,7 +226,7 @@ class _AddRidesState extends State<AddRides> {
                         backgroundColor: MaterialStateProperty.all<Color>(
                             colorsFile.buttonRole), // Change the color here
                       ),
-                      child: Text(
+                      child: const Text(
                         'Cancel',
                         style: TextStyle(color: colorsFile.icons),
                       ),
@@ -93,7 +240,7 @@ class _AddRidesState extends State<AddRides> {
                         backgroundColor: MaterialStateProperty.all<Color>(
                             colorsFile.buttonRole), // Change the color here
                       ),
-                      child: Text(
+                      child: const Text(
                         'Submit',
                         style: TextStyle(color: colorsFile.icons),
                       ),
@@ -123,7 +270,7 @@ class _AddRidesState extends State<AddRides> {
                 Colors.white, // Change the background color of the TimePicker
             dialogBackgroundColor:
                 Colors.grey[200], // Change the dialog background color
-            textTheme: TextTheme(
+            textTheme: const TextTheme(
               headline1:
                   TextStyle(color: Colors.black), // Change the text color
               button:
@@ -143,6 +290,10 @@ class _AddRidesState extends State<AddRides> {
   @override
   void initState() {
     super.initState();
+
+    //getting current location
+
+    getCurrentLocation();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
 
@@ -219,7 +370,7 @@ class _AddRidesState extends State<AddRides> {
                   bottom: 0,
                   child: Container(
                     height: 150,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
@@ -256,18 +407,18 @@ class _AddRidesState extends State<AddRides> {
                     border: 2,
                     linearGradient: LinearGradient(
                       colors: [
-                        Color(0xFF003A5A).withOpacity(0.37),
-                        Color(0xFF003A5A).withOpacity(1),
-                        Color(0xFF003A5A).withOpacity(0.36),
+                        const Color(0xFF003A5A).withOpacity(0.37),
+                        const Color(0xFF003A5A).withOpacity(1),
+                        const Color(0xFF003A5A).withOpacity(0.36),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
                     borderGradient: LinearGradient(
                       colors: [
-                        Color(0xFF003A5A).withOpacity(0.37),
-                        Color(0xFF003A5A).withOpacity(1),
-                        Color(0xFF003A5A).withOpacity(0.36),
+                        const Color(0xFF003A5A).withOpacity(0.37),
+                        const Color(0xFF003A5A).withOpacity(1),
+                        const Color(0xFF003A5A).withOpacity(0.36),
                       ],
                     ),
                     child: Padding(
@@ -282,15 +433,15 @@ class _AddRidesState extends State<AddRides> {
                                   _selectDateRange(
                                       context); // Call function to show date range picker
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                     Icons.calendar_month), // Use calendar icon
                               ),
-                              SizedBox(width: 3.0),
+                              const SizedBox(width: 3.0),
                               TextButton(
                                 onPressed: () => _selectTime(context),
                                 child: Text(
                                   ' ${_selectedTime.hour}:${_selectedTime.minute}',
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                               //Spacer(),
@@ -322,7 +473,7 @@ class _AddRidesState extends State<AddRides> {
                                       bottomSheetVisible = true;
                                     });
                                   },
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.close,
                                     color: Color(0xFFFFFFFF), // White color
                                     size: 25.0,
@@ -350,11 +501,11 @@ class _AddRidesState extends State<AddRides> {
                                         Expanded(
                                             child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: 'Home',
+                                            labelText: '${origin_address_name}',
                                             prefixIcon: Container(
                                               width: 37.0,
                                               height: 37.0,
-                                              margin: EdgeInsets.only(
+                                              margin: const EdgeInsets.only(
                                                   left: 5, right: 10),
                                               alignment: Alignment.center,
                                               decoration: BoxDecoration(
@@ -365,15 +516,25 @@ class _AddRidesState extends State<AddRides> {
                                                 ),
                                                 color: Colors.white,
                                               ),
-                                              child: Icon(
-                                                Icons.place,
-                                                color: colorsFile.icons,
+                                              child: InkWell(
+                                                onTap: (){
+                                                  //Calling the map functions
+                                                  print("Ontaped");
+                                                  GoogleMapController?
+                                                  map_controller;
+                                                  google_map_for_origin(
+                                                      map_controller);
+                                                },
+                                                child:const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
+                                                ),
                                               ),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(30.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.white,
                                                 width: 2.0,
                                               ),
@@ -381,19 +542,19 @@ class _AddRidesState extends State<AddRides> {
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(30.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.blue,
                                                 width: 2.0,
                                               ),
                                             ),
                                           ),
                                         )),
-                                        SizedBox(width: 5),
+                                        const SizedBox(width: 5),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
                                               onTap: () {},
-                                              child: Center(
+                                              child: const Center(
                                                 child: Icon(
                                                   Icons.swap_vert,
                                                   color: Colors.white,
@@ -405,7 +566,7 @@ class _AddRidesState extends State<AddRides> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 Container(
                                   height: 50,
                                   child: Padding(
@@ -419,7 +580,7 @@ class _AddRidesState extends State<AddRides> {
                                             prefixIcon: Container(
                                               width: 37.0,
                                               height: 37.0,
-                                              margin: EdgeInsets.only(
+                                              margin: const EdgeInsets.only(
                                                   left: 5, right: 10),
                                               alignment: Alignment.center,
                                               decoration: BoxDecoration(
@@ -430,7 +591,7 @@ class _AddRidesState extends State<AddRides> {
                                                 ),
                                                 color: Colors.white,
                                               ),
-                                              child: Icon(
+                                              child: const Icon(
                                                 Icons.place,
                                                 color: colorsFile.icons,
                                               ),
@@ -438,7 +599,7 @@ class _AddRidesState extends State<AddRides> {
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(30.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.white,
                                                 width: 2.0,
                                               ),
@@ -446,14 +607,14 @@ class _AddRidesState extends State<AddRides> {
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(30.0),
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Colors.blue,
                                                 width: 2.0,
                                               ),
                                             ),
                                           ),
                                         )),
-                                        SizedBox(
+                                        const SizedBox(
                                             width:
                                                 10), // Adjust the space between the two icons
                                         Padding(
@@ -469,7 +630,7 @@ class _AddRidesState extends State<AddRides> {
                                               child: Container(
                                                   height: 45,
                                                   width: 45,
-                                                  decoration: BoxDecoration(
+                                                  decoration: const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: Colors.white60,
                                                   ),
@@ -483,7 +644,7 @@ class _AddRidesState extends State<AddRides> {
                                                           CurveType.concave,
                                                       depth: 30,
                                                       spread: 2,
-                                                      child: Center(
+                                                      child: const Center(
                                                         child: Icon(
                                                           Icons.send,
                                                           color: colorsFile
@@ -515,7 +676,7 @@ class _AddRidesState extends State<AddRides> {
                   bottom: 0,
                   child: Container(
                     height: 350,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
