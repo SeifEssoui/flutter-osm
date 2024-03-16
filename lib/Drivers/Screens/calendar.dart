@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:osmflutter/map/googlemaps.dart';
 import 'package:osmflutter/map/home_example.dart';
 
 class Person {
@@ -65,7 +66,7 @@ class _CalendarState extends State<Calendar> {
         children: [
           
           // Background Photo
-          OldMainExample(),
+          MapsGoogleExample(),
           Positioned(
             left: 0,
             right: 0,

@@ -8,7 +8,6 @@ import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:osmflutter/map/googlemaps.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:osmflutter/map/search_example.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -23,14 +22,14 @@ void main() {
   ));
 }
 
-class OldMainExample extends StatefulWidget {
-  OldMainExample({Key? key}) : super(key: key);
+class MapsGoogleExample extends StatefulWidget {
+  MapsGoogleExample({Key? key}) : super(key: key);
 
   @override
   _MainExampleState createState() => _MainExampleState();
 }
 
-class _MainExampleState extends State<OldMainExample>
+class _MainExampleState extends State<MapsGoogleExample>
     with OSMMixinObserver, TickerProviderStateMixin {
   late MapController controller;
 
@@ -223,174 +222,10 @@ class _MainExampleState extends State<OldMainExample>
     return Scaffold(
       key: scaffoldKey,
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      //   actions: <Widget>[
-      //     Builder(builder: (ctx) {
-      //       return GestureDetector(
-      //         onLongPress: () => drawMultiRoads(),
-      //         onDoubleTap: () async {
-      //           await controller.clearAllRoads();
-      //             await controller.removeLastRoad();
-      //             await controller.removeMarkers(await controller.geopoints);
-      //         },
-      //         child: 
-      //         ClayContainer(
-      //               color: Colors.white,
-      //               height: 50,
-      //               width: 50,
-      //               borderRadius: 40,
-      //               curveType: CurveType.concave,
-      //               depth: 30,
-      //               spread: 2,
-      //               child: Center(
-      //                 child: 
-      //                 IconButton(
-      //           onPressed: () {
-      //             beginDrawRoad.value = true;
-      //           },
-      //           icon: Icon(Icons.route,color: colorsFile.icons,),
-      //         ),
-      //               ),
-      //             ),
-
-      //       );
-      //     }),
-      //     SizedBox(width: 5,),
-      //       ClayContainer(
-      //               color: Colors.white,
-      //               height: 50,
-      //               width: 50,
-      //               borderRadius: 40,
-      //               curveType: CurveType.concave,
-      //               depth: 30,
-      //               spread: 2,
-      //               child: Center(
-      //                 child:IconButton(
-      //       onPressed: () async {
-      //         visibilityZoomNotifierActivation.value =
-      //             !visibilityZoomNotifierActivation.value;
-      //         zoomNotifierActivation.value = !zoomNotifierActivation.value;
-      //       },
-      //       icon: Icon(Icons.zoom_out_map ,color: colorsFile.icons,),
-      //               ),
-      //             ),
-            
-      //     ),
-      //     SizedBox(width: 5,),
-
-      //     ClayContainer(
-      //               color: Colors.white,
-      //               height: 50,
-      //               width: 50,
-      //               borderRadius: 40,
-      //               curveType: CurveType.concave,
-      //               depth: 30,
-      //               spread: 2,
-      //               child: Center(
-      //                 child:IconButton(
-      //       onPressed: () {
-      //         Navigator.push(
-      //           context,
-      //           MaterialPageRoute(
-      //             builder: (context) => SearchPage(),
-      //           ),
-      //         );
-      //       },
-      //       icon: Icon(Icons.search,color: colorsFile.icons,),
-      //     ),
-      //               ),
-      //             ),
-      //   ],
-      // ),
       body: Container(
         child: Stack(
           children: [
-            //Osm Code
-            // OSMFlutter(
-            //   controller: controller,
-            //   osmOption: OSMOption(
-            //     enableRotationByGesture: true,
-            //     zoomOption: ZoomOption(
-            //       initZoom: 13,
-            //       minZoomLevel: 3,
-            //       maxZoomLevel: 19,
-            //       stepZoom: 1.0,
-            //     ),
-            //     userLocationMarker: UserLocationMaker(
-            //         personMarker: MarkerIcon(
-            //           iconWidget: SizedBox(
-            //             width: 32,
-            //             height: 64,
-            //             child: Image.asset(
-            //               "assets/images/directionIcon.png",
-            //               scale: .3,
-            //             ),
-            //           ),
-            //         ),
-            //         directionArrowMarker: MarkerIcon(
-            //           iconWidget: SizedBox(
-            //             width: 32,
-            //             height: 64,
-            //             child: Image.asset(
-            //               "assets/images/directionIcon.png",
-            //               scale: .3,
-            //             ),
-            //           ),
-            //         )),
-            //     roadConfiguration: RoadOption(
-            //       roadColor: Colors.blueAccent,
-            //     ),
-            //     markerOption: MarkerOption(
-            //       defaultMarker: MarkerIcon(
-            //         icon: Icon(
-            //           Icons.home,
-            //           color: Colors.orange,
-            //           size: 32,
-            //         ),
-            //       ),
-            //       advancedPickerMarker: MarkerIcon(
-            //         icon: Icon(
-            //           Icons.location_searching,
-            //           color: Colors.green,
-            //           size: 56,
-            //         ),
-            //       ),
-            //     ),
-            //     showContributorBadgeForOSM: false,
-            //     showDefaultInfoWindow: false,
-            //   ),
-            //   mapIsLoading: Center(
-            //     child: Column(
-            //       mainAxisSize: MainAxisSize.min,
-            //       mainAxisAlignment: MainAxisAlignment.center,
-            //       crossAxisAlignment: CrossAxisAlignment.center,
-            //       children: [
-            //         CircularProgressIndicator(),
-            //         Text("Map is Loading.."),
-            //       ],
-            //     ),
-            //   ),
-            //   onMapIsReady: (isReady) {
-            //     if (isReady) {
-            //       print("map is ready");
-            //     }
-            //   },
-            //   onLocationChanged: (myLocation) {
-            //     print('user location :$myLocation');
-            //   },
-            //   onGeoPointClicked: (geoPoint) async {
-            //     if (geoPoint ==
-            //         GeoPoint(
-            //           latitude: 47.442475,
-            //           longitude: 8.4680389,
-            //         )) {
-            //       final newGeoPoint = GeoPoint(
-            //         latitude: 47.4517782,
-            //         longitude: 8.4716146,
-            //       );
-            //     }
-            //   },
-            // ),
+           
             //Google Maps Api code
              check==true ? GoogleMap(initialCameraPosition: CameraPosition(
               target: LatLng(current_lat,current_lng),

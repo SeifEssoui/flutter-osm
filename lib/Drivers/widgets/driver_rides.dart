@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:osmflutter/map/googlemaps.dart';
 import 'package:osmflutter/map/home_example.dart';
 
 class DriverRides extends StatefulWidget {
@@ -34,7 +35,7 @@ class _DriverRidesState extends State<DriverRides> {
       body: Stack(
         children: [
           Positioned(
-            child: OldMainExample(),
+            child: MapsGoogleExample(),
           ),
 
           Visibility(
