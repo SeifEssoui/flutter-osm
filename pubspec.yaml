@@ -51,6 +51,7 @@ dependencies:
   search_map_place_updated: ^0.0.4
   geocode: ^1.0.3
   geocoding: ^2.1.1
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

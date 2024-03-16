@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,6 +11,7 @@ import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:osmflutter/map/home_example.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -29,6 +29,8 @@ class _AddRidesState extends State<AddRides> {
 
   //Google Maps For Home
 
+  //For home
+
   var origin_address_name = 'Home';
 
   void origin_address_method(dynamic newlat, dynamic newlng) async {
@@ -38,6 +40,10 @@ class _AddRidesState extends State<AddRides> {
     "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
     print("Origin Name == ${origin_address_name}");
+
+    setState(() {
+
+    });
   }
 
   List<Marker> myMarker = [];
@@ -46,46 +52,155 @@ class _AddRidesState extends State<AddRides> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  dynamic  current_lat, current_lng;
+  dynamic  current_lat1, current_lng1, current_lat2, current_lng2;
 
-  Future<void> getCurrentLocation() async {
-    print("--------Inside the get location method --------");
-
-    await Geolocator.requestPermission()
-        .then((value) {
-    })
-        .onError((error, stackTrace) {});
-
-    Position position = await Geolocator.getCurrentPosition();
+  bool check = false;
 
 
-    setState(() {
-      current_lat = position.latitude;
-      current_lng = position.longitude;
-
-      print("Current Lat & Lng is: ");
-      print(current_lat);
-      print(current_lng);
-
-      myMarker.add(
-          Marker(
-            markerId: const MarkerId("First"),
-            position: LatLng(current_lng, current_lng),
-            infoWindow: const InfoWindow(title: "Current Location"),
-          ));
-
-    });
-
-  }
+  google_map_for_origin(GoogleMapController? map_controller) async {
 
 
-  google_map_for_origin(GoogleMapController? map_controller) {
+      current_lat1 = await sharedpreferences.getlat();
+      current_lng1 = await sharedpreferences.getlng();
+
+      current_lat2 = await sharedpreferences.getlat();
+      current_lng2 = await sharedpreferences.getlng();
+
+
+      print("Shared data is ");
+      print("${current_lng1} : ${current_lat1}");
+
+      setState(() {
+        check=true;
+      });
+
+
     showDialog(
         context: context,
         builder: (context) {
           final height = MediaQuery.of(context).size.height;
           final width = MediaQuery.of(context).size.width;
 
+
+          print("Fetched lat & lnng is ${current_lat1} & ${current_lng1}");
+         return  Dialog(
+           child: Stack(
+             children: [
+               Container(
+                 height: height * 0.7,
+                 width: width * 0.8,
+                 clipBehavior: Clip.hardEdge,
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(20),
+                   color: Colors.transparent,
+                 ),
+                 child: check==true ?
+                 GoogleMap(
+                   initialCameraPosition: CameraPosition(
+                     target: LatLng(current_lat1,current_lng1), // Should be LatLng(current_lat,current_lng)
+                     zoom: 14,
+                   ),
+                   markers: Set<Marker>.of(myMarker),
+                   onMapCreated: (GoogleMapController controller) {
+                     // _controller.complete(controller);
+                     setState(() {
+                       map_controller = controller;
+                     });
+                   },
+                   onTap: (position) {
+                     mapGoogle(position);
+                     setState(() {});
+                   },
+                 ) : Center(child: CircularProgressIndicator(color: Colors.black,),),
+               ),
+               Padding(
+                 padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+                 child: SearchMapPlaceWidget(
+                     hasClearButton: true,
+                     iconColor: Colors.black,
+                     placeType: PlaceType.address,
+                     bgColor: Colors.white,
+                     textColor: Colors.black,
+                     placeholder: "Search Any Location",
+                     apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
+                     onSelected: (Place place) async {
+                       Geolocation? geo_location = await place.geolocation;
+                       print("running-----");
+                       map_controller!.animateCamera(
+                           CameraUpdate.newLatLng(geo_location?.coordinates));
+                       map_controller!.animateCamera(
+                           CameraUpdate.newLatLngBounds(
+                               geo_location?.bounds, 0));
+                     }),
+               ),
+             ],
+           ),
+         );;
+
+  });
+  }
+
+  mapGoogle(position) async {
+    myMarker.clear();
+    current_lat1 = position.latitude;
+    current_lng1 = position.longitude;
+
+    Navigator.pop(context);
+    origin_address_method(current_lat1, current_lng1);
+    myMarker.add(Marker(
+      markerId: const MarkerId("First"),
+      position: LatLng(current_lat1, current_lng1),
+      infoWindow: const InfoWindow(title: "Home Location"),
+    ));
+
+    print("After Selecting Origin: Lat & Lng is ");
+    print(current_lat1);
+    print(current_lng1);
+
+    setState(() {});
+    //Setting camera position in setstate
+    CameraPosition camera_position =
+    CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
+
+    GoogleMapController controller = await _controller.future;
+
+    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
+
+    // print("-----------Updated-----------");
+    // print(lat);
+    // print(lng);
+  }
+
+
+
+  //For EV Tower
+
+  var destination_address_name = 'EV Tower';
+
+  void destination_address_method(double newlat, double newlng) async {
+    List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
+    setState(() {});
+    destination_address_name =
+    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+
+    print("Destination Name == ${destination_address_name}");
+  }
+
+  Completer<GoogleMapController> _controller1 = Completer();
+
+  // Markers
+
+  List<Marker> myMarker1 = [];
+
+  List<Marker> markers1 = [];
+
+
+  google_map_for_origin1(GoogleMapController? map_controller1) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          final height = MediaQuery.of(context).size.height;
+          final width = MediaQuery.of(context).size.width;
           return Dialog(
             child: Stack(
               children: [
@@ -99,18 +214,18 @@ class _AddRidesState extends State<AddRides> {
                   ),
                   child: GoogleMap(
                     initialCameraPosition: CameraPosition(
-                      target: LatLng(current_lng,current_lng),
+                      target: LatLng(current_lat2, current_lng2),
                       zoom: 14,
                     ),
-                    markers: Set<Marker>.of(myMarker),
-                    onMapCreated: (GoogleMapController controller) {
-                      // _controller.complete(controller);
+                    markers: Set<Marker>.of(myMarker1),
+                    onMapCreated: (GoogleMapController controller1) {
                       setState(() {
-                        map_controller = controller;
+                        map_controller1 = controller1;
                       });
+                      _controller1.complete(controller1);
                     },
                     onTap: (position) {
-                      mapGoogle(position);
+                      mapGoogle1(position);
                       setState(() {});
                     },
                   ),
@@ -126,13 +241,13 @@ class _AddRidesState extends State<AddRides> {
                       placeholder: "Search Any Location",
                       apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
                       onSelected: (Place place) async {
-                        Geolocation? geo_location = await place.geolocation;
-                        print("running-----");
-                        map_controller!.animateCamera(
-                            CameraUpdate.newLatLng(geo_location?.coordinates));
-                        map_controller!.animateCamera(
+                        Geolocation? geo_location1 = await place.geolocation;
+                        print("running ----- ddestination");
+                        map_controller1!.animateCamera(
+                            CameraUpdate.newLatLng(geo_location1?.coordinates));
+                        map_controller1!.animateCamera(
                             CameraUpdate.newLatLngBounds(
-                                geo_location?.bounds, 0));
+                                geo_location1?.bounds, 0));
                       }),
                 ),
               ],
@@ -141,36 +256,39 @@ class _AddRidesState extends State<AddRides> {
         });
   }
 
-  mapGoogle(position) async {
-    myMarker.clear();
-    current_lat = position.latitude;
-    current_lng = position.longitude;
+  mapGoogle1(position) async {
+    myMarker1.clear();
+    current_lat2 = position.latitude;
+    current_lng2 = position.longitude;
+
+    print("After Selecting Destination: Lat & Lng is ");
+    print(current_lat2);
+    print(current_lng2);
 
     Navigator.pop(context);
-    origin_address_method(current_lat, current_lng);
-    myMarker.add(Marker(
+    destination_address_method(current_lat2, current_lng2);
+    myMarker1.add(Marker(
       markerId: const MarkerId("First"),
-      position: LatLng(current_lat, current_lng),
-      infoWindow: const InfoWindow(title: "Origin Location"),
+      position: LatLng(current_lat2, current_lng2),
+      infoWindow: const InfoWindow(title: "EV Tower Location"),
     ));
-
-    print("After Selecting Origin: Lat & Lng is ");
-    print(current_lat);
-    print(current_lng);
 
     setState(() {});
     //Setting camera position in setstate
-    CameraPosition camera_position =
-    CameraPosition(target: LatLng(current_lat, current_lng), zoom: 14);
+    CameraPosition camera_position1 =
+    CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
 
-    GoogleMapController controller = await _controller.future;
+    GoogleMapController controller = await _controller1.future;
 
-    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position));
+    controller.animateCamera(CameraUpdate.newCameraPosition(camera_position1));
 
-    // print("-----------Updated-----------");
-    // print(lat);
-    // print(lng);
+    print("-----------Updated-----------");
+    print(current_lat2);
+    print(current_lng2);
+
+
   }
+
 
   int selectedIndex = 0;
   DateTime now = DateTime.now();
@@ -293,7 +411,6 @@ class _AddRidesState extends State<AddRides> {
 
     //getting current location
 
-    getCurrentLocation();
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
 
@@ -501,7 +618,7 @@ class _AddRidesState extends State<AddRides> {
                                         Expanded(
                                             child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: '${origin_address_name}',
+                                            hintText: "${origin_address_name}",
                                             prefixIcon: Container(
                                               width: 37.0,
                                               height: 37.0,
@@ -576,7 +693,7 @@ class _AddRidesState extends State<AddRides> {
                                         Expanded(
                                             child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: 'EY Tower',
+                                            labelText: '${destination_address_name}',
                                             prefixIcon: Container(
                                               width: 37.0,
                                               height: 37.0,
@@ -591,9 +708,17 @@ class _AddRidesState extends State<AddRides> {
                                                 ),
                                                 color: Colors.white,
                                               ),
-                                              child: const Icon(
-                                                Icons.place,
-                                                color: colorsFile.icons,
+                                              child: InkWell(
+                                                onTap: (){
+                                                  GoogleMapController?
+                                                  map_controller1;
+                                                  google_map_for_origin1(
+                                                      map_controller1);
+                                                },
+                                                child: const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
+                                                ),
                                               ),
                                             ),
                                             enabledBorder: OutlineInputBorder(

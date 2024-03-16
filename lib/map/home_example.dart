@@ -8,6 +8,7 @@ import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:osmflutter/map/search_example.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -56,7 +57,6 @@ class _MainExampleState extends State<OldMainExample>
 
   //Google Maps Api
 
-
   //Completer<GoogleMapController> _controller = Completer();
 
   // Markers
@@ -65,8 +65,8 @@ class _MainExampleState extends State<OldMainExample>
 
   List<Marker> markers = [];
 
-  dynamic  current_lat, current_lng;
-  bool check =false;
+  dynamic current_lat, current_lng;
+  bool check = false;
 
   Future<void> getCurrentLocation() async {
     print("--------Inside the get location method --------");
@@ -81,30 +81,36 @@ class _MainExampleState extends State<OldMainExample>
       current_lat = position.latitude;
       current_lng = position.longitude;
 
-      check=true;
+      check = true;
 
       print("Current Lat & Lng is: ");
       print(current_lat);
       print(current_lng);
 
-      myMarker.add(
-          Marker(
-            markerId: const MarkerId("First"),
-            position: LatLng(current_lng, current_lng),
-            infoWindow: const InfoWindow(title: "Current Location"),
-          ));
-
+      myMarker.add(Marker(
+        markerId: const MarkerId("First"),
+        position: LatLng(current_lng, current_lng),
+        infoWindow: const InfoWindow(title: "Current Location"),
+      ));
     });
+
+    //storing values in shared preferences
+
+    print("Current lat & lng is ${current_lng} : ${current_lat}" );
+    //setting
+    sharedpreferences.setlat(current_lat);
+    sharedpreferences.setlng(current_lng);
+
+
 
   }
 
-
-
-      @override
+  @override
   void initState() {
     super.initState();
 
     //Getting user location
+
 
     getCurrentLocation();
 
@@ -201,8 +207,9 @@ class _MainExampleState extends State<OldMainExample>
     super.onRoadTap(road);
     debugPrint("road:" + road.toString());
     Future.microtask(() async {
-   await   controller.removeMarkers(road.route);
-     await  controller.removeRoad(roadKey: road.key);});
+      await controller.removeMarkers(road.route);
+      await controller.removeRoad(roadKey: road.key);
+    });
   }
 
   @override
@@ -216,7 +223,6 @@ class _MainExampleState extends State<OldMainExample>
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,76 +235,84 @@ class _MainExampleState extends State<OldMainExample>
               onLongPress: () => drawMultiRoads(),
               onDoubleTap: () async {
                 await controller.clearAllRoads();
-                  await controller.removeLastRoad();
-                  await controller.removeMarkers(await controller.geopoints);
+                await controller.removeLastRoad();
+                await controller.removeMarkers(await controller.geopoints);
               },
-              child: 
-              ClayContainer(
-                    color: Colors.white,
-                    height: 50,
-                    width: 50,
-                    borderRadius: 40,
-                    curveType: CurveType.concave,
-                    depth: 30,
-                    spread: 2,
-                    child: Center(
-                      child: 
-                      IconButton(
-                onPressed: () {
-                  beginDrawRoad.value = true;
-                },
-                icon: Icon(Icons.route,color: colorsFile.icons,),
-              ),
+              child: ClayContainer(
+                color: Colors.white,
+                height: 50,
+                width: 50,
+                borderRadius: 40,
+                curveType: CurveType.concave,
+                depth: 30,
+                spread: 2,
+                child: Center(
+                  child: IconButton(
+                    onPressed: () {
+                      beginDrawRoad.value = true;
+                    },
+                    icon: Icon(
+                      Icons.route,
+                      color: colorsFile.icons,
                     ),
                   ),
-
+                ),
+              ),
             );
           }),
-          SizedBox(width: 5,),
-            ClayContainer(
-                    color: Colors.white,
-                    height: 50,
-                    width: 50,
-                    borderRadius: 40,
-                    curveType: CurveType.concave,
-                    depth: 30,
-                    spread: 2,
-                    child: Center(
-                      child:IconButton(
-            onPressed: () async {
-              visibilityZoomNotifierActivation.value =
-                  !visibilityZoomNotifierActivation.value;
-              zoomNotifierActivation.value = !zoomNotifierActivation.value;
-            },
-            icon: Icon(Icons.zoom_out_map ,color: colorsFile.icons,),
-                    ),
-                  ),
-            
+          SizedBox(
+            width: 5,
           ),
-          SizedBox(width: 5,),
-
           ClayContainer(
-                    color: Colors.white,
-                    height: 50,
-                    width: 50,
-                    borderRadius: 40,
-                    curveType: CurveType.concave,
-                    depth: 30,
-                    spread: 2,
-                    child: Center(
-                      child:IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchPage(),
+            color: Colors.white,
+            height: 50,
+            width: 50,
+            borderRadius: 40,
+            curveType: CurveType.concave,
+            depth: 30,
+            spread: 2,
+            child: Center(
+              child: IconButton(
+                onPressed: () async {
+                  visibilityZoomNotifierActivation.value =
+                      !visibilityZoomNotifierActivation.value;
+                  zoomNotifierActivation.value = !zoomNotifierActivation.value;
+                },
+                icon: Icon(
+                  Icons.zoom_out_map,
+                  color: colorsFile.icons,
                 ),
-              );
-            },
-            icon: Icon(Icons.search,color: colorsFile.icons,),
+              ),
+            ),
           ),
+          SizedBox(
+            width: 5,
+          ),
+          ClayContainer(
+            color: Colors.white,
+            height: 50,
+            width: 50,
+            borderRadius: 40,
+            curveType: CurveType.concave,
+            depth: 30,
+            spread: 2,
+            child: Center(
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SearchPage(),
                     ),
-                  ),
+                  );
+                },
+                icon: Icon(
+                  Icons.search,
+                  color: colorsFile.icons,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
       body: Container(
@@ -391,10 +405,18 @@ class _MainExampleState extends State<OldMainExample>
             //   },
             // ),
             //Google Maps Api code
-             check==true ? GoogleMap(initialCameraPosition: CameraPosition(
-              target: LatLng(current_lat,current_lng),
-              zoom: 14.5
-            )) : Center(child: CircularProgressIndicator(color: Colors.black,),),
+            check == true
+                ? GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                        target: LatLng(current_lat, current_lng), zoom: 14.5))
+                : Center(
+                    child: Text(
+                    "Map is Loading",
+                    style: TextStyle(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic),
+                  )),
             Positioned(
               bottom: 10,
               left: 10,
@@ -438,44 +460,47 @@ class _MainExampleState extends State<OldMainExample>
                   child: Column(
                     children: [
                       ClayContainer(
-                    color: Colors.white,
-                    height: 50,
-                    width: 50,
-                    borderRadius: 40,
-                    curveType: CurveType.concave,
-                    depth: 30,
-                    spread: 2,
-                    child: Center(
-                      child:  ElevatedButton(
-                        child: Icon(Icons.add,color: colorsFile.icons,),
-                        onPressed: () async {
-                          controller.zoomIn();
-                        },
+                        color: Colors.white,
+                        height: 50,
+                        width: 50,
+                        borderRadius: 40,
+                        curveType: CurveType.concave,
+                        depth: 30,
+                        spread: 2,
+                        child: Center(
+                          child: ElevatedButton(
+                            child: Icon(
+                              Icons.add,
+                              color: colorsFile.icons,
+                            ),
+                            onPressed: () async {
+                              controller.zoomIn();
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                     
                       SizedBox(
                         height: 16,
                       ),
                       ClayContainer(
-                    color: Colors.white,
-                    height: 50,
-                    width: 50,
-                    borderRadius: 40,
-                    curveType: CurveType.concave,
-                    depth: 30,
-                    spread: 2,
-                    child: Center(
-                      child:  ElevatedButton(
-                        child: Icon(Icons.remove,color: colorsFile.icons,),
-                        onPressed: () async {
-                          controller.zoomOut();
-                        },
-                      )
-                    ),
-                  ),
-                      
+                        color: Colors.white,
+                        height: 50,
+                        width: 50,
+                        borderRadius: 40,
+                        curveType: CurveType.concave,
+                        depth: 30,
+                        spread: 2,
+                        child: Center(
+                            child: ElevatedButton(
+                          child: Icon(
+                            Icons.remove,
+                            color: colorsFile.icons,
+                          ),
+                          onPressed: () async {
+                            controller.zoomOut();
+                          },
+                        )),
+                      ),
                     ],
                   ),
                 ),
@@ -491,7 +516,6 @@ class _MainExampleState extends State<OldMainExample>
               },
             ),
             if (_roadInfo != null)
-            
               Positioned(
                 top: 10,
                 left: 10,
@@ -500,7 +524,6 @@ class _MainExampleState extends State<OldMainExample>
                       "${Duration(seconds: _roadInfo!.duration!.toInt()).inMinutes} minutes",
                   distance: "${_roadInfo!.distance} Km",
                   roadInfo: _roadInfo!.route.toString(),
-                  
                 ),
               ),
           ],
@@ -538,45 +561,42 @@ class _MainExampleState extends State<OldMainExample>
                   builder: (ctx, isTracking, _) {
                     if (isTracking) {
                       return Container(
-                          
-                          
                           child: Center(
-                            child: ClayContainer(
-                              color: Colors.white,
-                              height: 50,
-                              width: 50,
-                              borderRadius: 40,
-                              curveType: CurveType.concave,
-                              depth: 30,
-                              spread: 2,
-                              child: Center(
-                                child: Icon(
-                                  Icons.send,
-                                  color: colorsFile.icons,
-                                ),
-                              ),
-                            ),
-                          ));
-                    }
-                    return Container(
-                        
-                        child: Center(
-                          child: ClayContainer(
-                            color: Colors.white,
-                            height: 50,
-                            width: 50,
-                            borderRadius: 40,
-                            curveType: CurveType.concave,
-                            depth: 30,
-                            spread: 2,
-                            child: Center(
-                              child: Icon(
-                                Icons.my_location,
-                                color: colorsFile.icons,
-                              ),
+                        child: ClayContainer(
+                          color: Colors.white,
+                          height: 50,
+                          width: 50,
+                          borderRadius: 40,
+                          curveType: CurveType.concave,
+                          depth: 30,
+                          spread: 2,
+                          child: Center(
+                            child: Icon(
+                              Icons.send,
+                              color: colorsFile.icons,
                             ),
                           ),
-                        ));
+                        ),
+                      ));
+                    }
+                    return Container(
+                        child: Center(
+                      child: ClayContainer(
+                        color: Colors.white,
+                        height: 50,
+                        width: 50,
+                        borderRadius: 40,
+                        curveType: CurveType.concave,
+                        depth: 30,
+                        spread: 2,
+                        child: Center(
+                          child: Icon(
+                            Icons.my_location,
+                            color: colorsFile.icons,
+                          ),
+                        ),
+                      ),
+                    ));
                   },
                 ),
               ],
@@ -718,7 +738,7 @@ class RoadTypeChoiceWidget extends StatelessWidget {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: TextButton(
-            onLongPress: (){},
+            onLongPress: () {},
             onPressed: () {
               setValueCallback(RoadType.car);
               Navigator.pop(context, RoadType.car);
@@ -768,7 +788,6 @@ class RoadInformationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return GlassmorphicContainer(
       height: 150,
       width: 250,
@@ -813,10 +832,12 @@ class RoadInformationWidget extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.close),
                         onPressed: () {
- for (int i = 0; i < roadInfo.length; i += 1000) {
-    int end = (i + 1000 < roadInfo.length) ? i + 1000 : roadInfo.length;
-    print(roadInfo.substring(i, end));
-  }
+                          for (int i = 0; i < roadInfo.length; i += 1000) {
+                            int end = (i + 1000 < roadInfo.length)
+                                ? i + 1000
+                                : roadInfo.length;
+                            print(roadInfo.substring(i, end));
+                          }
                           // Add the function to close the card here
                         },
                       ),
