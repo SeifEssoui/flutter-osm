@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:osmflutter/map/googlemaps.dart';
 import 'package:osmflutter/map/home_example.dart';
 
 class Search extends StatefulWidget {
@@ -153,7 +154,7 @@ class _SearchState extends State<Search> {
             // Background Photo
             Positioned(
 
-              child: OldMainExample(),
+              child: MapsGoogleExample(),
 
             ),
 

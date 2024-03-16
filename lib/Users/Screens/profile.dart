@@ -3,6 +3,7 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:osmflutter/map/googlemaps.dart';
 
 import 'package:osmflutter/map/home_example.dart';
 
@@ -49,7 +50,7 @@ class _ProfileState extends State<Profile> {
       body: Stack(
         children: [
           // Background Photo
-          OldMainExample(),
+          MapsGoogleExample(),
           Positioned(
               left: 0,
               right: 0,
