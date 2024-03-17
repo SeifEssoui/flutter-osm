@@ -3,9 +3,9 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:osmflutter/map/googlemaps.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 
-import 'package:osmflutter/map/home_example.dart';
+import 'package:osmflutter/mapOsm/home_example.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});

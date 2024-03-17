@@ -10,7 +10,8 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:osmflutter/map/home_example.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
+import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -474,7 +475,7 @@ class _AddRidesState extends State<AddRides> {
   child:
    Container(
     
-    child: OldMainExample()),
+    child: MapsGoogleExample(),),
 ),
 
 

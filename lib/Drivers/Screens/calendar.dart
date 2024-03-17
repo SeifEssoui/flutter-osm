@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
-import 'package:osmflutter/map/googlemaps.dart';
-import 'package:osmflutter/map/home_example.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
+import 'package:osmflutter/mapOsm/home_example.dart';
 
 class Person {
   final String name;
