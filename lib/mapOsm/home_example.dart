@@ -67,10 +67,16 @@ class _MainExampleState extends State<OldMainExample>
 
   Future<void> getCurrentLocation() async {
     print("--------Inside the get location method --------");
-
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) {});
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error('Location Not Available');
+      }
+    } else {
+      throw Exception('Error');
+    }
 
     Position position = await Geolocator.getCurrentPosition();
 

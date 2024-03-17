@@ -17,9 +17,15 @@ class MapsGoogleExample extends StatefulWidget {
 }
 
 class _MapsGoogleExampleState extends State<MapsGoogleExample> {
+
+
   late GoogleMapController mapController;
-  late LatLng currentLocation;
+  //late LatLng currentLocation;
+  //For avoiding runtime error:
+  late LatLng currentLocation = LatLng(0.0, 0.0);
   Set<Marker> markers = {};
+
+  bool check = false;
 
   @override
   void initState() {
@@ -28,9 +34,24 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   }
 
   void getCurrentLocation() async {
+
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        return Future.error('Location Not Available');
+      }
+    } else {
+      throw Exception('Error');
+    }
     Position position = await Geolocator.getCurrentPosition();
     setState(() {
       currentLocation = LatLng(position.latitude, position.longitude);
+      check = true;
+      setState(() {
+
+      });
       markers.add(
         Marker(
           markerId: MarkerId("currentLocation"),
@@ -290,7 +311,7 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
+      body: check==true ?  GoogleMap(
         initialCameraPosition: CameraPosition(
           target: currentLocation,
           zoom: 14.5,
@@ -300,7 +321,7 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
           mapController.setMapStyle(_loadNightStyle());
         },
         markers: markers,
-      ),
+      ) : Center(child: CircularProgressIndicator(color: Colors.white,),),
     );
   }
 }

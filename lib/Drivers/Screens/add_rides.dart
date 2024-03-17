@@ -16,7 +16,6 @@ import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-
 class AddRides extends StatefulWidget {
   const AddRides({Key? key}) : super(key: key);
 
@@ -25,9 +24,6 @@ class AddRides extends StatefulWidget {
 }
 
 class _AddRidesState extends State<AddRides> {
-
-
-
   //Google Maps For Home
 
   //For home
@@ -38,13 +34,11 @@ class _AddRidesState extends State<AddRides> {
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     origin_address_name =
-    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+        "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
     print("Origin Name == ${origin_address_name}");
 
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   List<Marker> myMarker = [];
@@ -53,28 +47,23 @@ class _AddRidesState extends State<AddRides> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  dynamic  current_lat1, current_lng1, current_lat2, current_lng2;
+  dynamic current_lat1, current_lng1, current_lat2, current_lng2;
 
   bool check = false;
 
-
   google_map_for_origin(GoogleMapController? map_controller) async {
+    current_lat1 = await sharedpreferences.getlat();
+    current_lng1 = await sharedpreferences.getlng();
 
+    current_lat2 = await sharedpreferences.getlat();
+    current_lng2 = await sharedpreferences.getlng();
 
-      current_lat1 = await sharedpreferences.getlat();
-      current_lng1 = await sharedpreferences.getlng();
+    print("Shared data is ");
+    print("${current_lng1} : ${current_lat1}");
 
-      current_lat2 = await sharedpreferences.getlat();
-      current_lng2 = await sharedpreferences.getlng();
-
-
-      print("Shared data is ");
-      print("${current_lng1} : ${current_lat1}");
-
-      setState(() {
-        check=true;
-      });
-
+    setState(() {
+      check = true;
+    });
 
     showDialog(
         context: context,
@@ -82,63 +71,68 @@ class _AddRidesState extends State<AddRides> {
           final height = MediaQuery.of(context).size.height;
           final width = MediaQuery.of(context).size.width;
 
-
           print("Fetched lat & lnng is ${current_lat1} & ${current_lng1}");
-         return  Dialog(
-           child: Stack(
-             children: [
-               Container(
-                 height: height * 0.7,
-                 width: width * 0.8,
-                 clipBehavior: Clip.hardEdge,
-                 decoration: BoxDecoration(
-                   borderRadius: BorderRadius.circular(20),
-                   color: Colors.transparent,
-                 ),
-                 child: check==true ?
-                 GoogleMap(
-                   initialCameraPosition: CameraPosition(
-                     target: LatLng(current_lat1,current_lng1), // Should be LatLng(current_lat,current_lng)
-                     zoom: 14,
-                   ),
-                   markers: Set<Marker>.of(myMarker),
-                   onMapCreated: (GoogleMapController controller) {
-                     // _controller.complete(controller);
-                     setState(() {
-                       map_controller = controller;
-                     });
-                   },
-                   onTap: (position) {
-                     mapGoogle(position);
-                     setState(() {});
-                   },
-                 ) : Center(child: CircularProgressIndicator(color: Colors.black,),),
-               ),
-               Padding(
-                 padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                 child: SearchMapPlaceWidget(
-                     hasClearButton: true,
-                     iconColor: Colors.black,
-                     placeType: PlaceType.address,
-                     bgColor: Colors.white,
-                     textColor: Colors.black,
-                     placeholder: "Search Any Location",
-                     apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
-                     onSelected: (Place place) async {
-                       Geolocation? geo_location = await place.geolocation;
-                       print("running-----");
-                       map_controller!.animateCamera(
-                           CameraUpdate.newLatLng(geo_location?.coordinates));
-                       map_controller!.animateCamera(
-                           CameraUpdate.newLatLngBounds(
-                               geo_location?.bounds, 0));
-                     }),
-               ),
-             ],
-           ),
-         );;
-
-  });
+          return Dialog(
+            child: Stack(
+              children: [
+                Container(
+                  height: height * 0.7,
+                  width: width * 0.8,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.transparent,
+                  ),
+                  child: check == true
+                      ? GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                            target: LatLng(current_lat1,
+                                current_lng1), // Should be LatLng(current_lat,current_lng)
+                            zoom: 14,
+                          ),
+                          markers: Set<Marker>.of(myMarker),
+                          onMapCreated: (GoogleMapController controller) {
+                            // _controller.complete(controller);
+                            setState(() {
+                              map_controller = controller;
+                            });
+                          },
+                          onTap: (position) {
+                            mapGoogle(position);
+                            setState(() {});
+                          },
+                        )
+                      : Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+                  child: SearchMapPlaceWidget(
+                      hasClearButton: true,
+                      iconColor: Colors.black,
+                      placeType: PlaceType.address,
+                      bgColor: Colors.white,
+                      textColor: Colors.black,
+                      placeholder: "Search Any Location",
+                      apiKey: "AIzaSyBglflWQihT8c4yf4q2MVa2XBtOrdAylmI",
+                      onSelected: (Place place) async {
+                        Geolocation? geo_location = await place.geolocation;
+                        print("running-----");
+                        map_controller!.animateCamera(
+                            CameraUpdate.newLatLng(geo_location?.coordinates));
+                        map_controller!.animateCamera(
+                            CameraUpdate.newLatLngBounds(
+                                geo_location?.bounds, 0));
+                      }),
+                ),
+              ],
+            ),
+          );
+          ;
+        });
   }
 
   mapGoogle(position) async {
@@ -161,7 +155,7 @@ class _AddRidesState extends State<AddRides> {
     setState(() {});
     //Setting camera position in setstate
     CameraPosition camera_position =
-    CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
+        CameraPosition(target: LatLng(current_lat1, current_lng1), zoom: 14);
 
     GoogleMapController controller = await _controller.future;
 
@@ -172,8 +166,6 @@ class _AddRidesState extends State<AddRides> {
     // print(lng);
   }
 
-
-
   //For EV Tower
 
   var destination_address_name = 'EV Tower';
@@ -182,7 +174,7 @@ class _AddRidesState extends State<AddRides> {
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     destination_address_name =
-    "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
+        "${placemark.reversed.last.country} , ${placemark.reversed.last.locality}, ${placemark.reversed.last.street} ";
 
     print("Destination Name == ${destination_address_name}");
   }
@@ -194,7 +186,6 @@ class _AddRidesState extends State<AddRides> {
   List<Marker> myMarker1 = [];
 
   List<Marker> markers1 = [];
-
 
   google_map_for_origin1(GoogleMapController? map_controller1) {
     showDialog(
@@ -277,7 +268,7 @@ class _AddRidesState extends State<AddRides> {
     setState(() {});
     //Setting camera position in setstate
     CameraPosition camera_position1 =
-    CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
+        CameraPosition(target: LatLng(current_lat2, current_lng2), zoom: 14);
 
     GoogleMapController controller = await _controller1.future;
 
@@ -286,10 +277,7 @@ class _AddRidesState extends State<AddRides> {
     print("-----------Updated-----------");
     print(current_lat2);
     print(current_lng2);
-
-
   }
-
 
   int selectedIndex = 0;
   DateTime now = DateTime.now();
@@ -301,7 +289,6 @@ class _AddRidesState extends State<AddRides> {
   bool ridesIsVisible = false;
   late double _height;
   late double _width;
-
 
   List<DateTime> _selectedDates = [];
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -435,6 +422,45 @@ class _AddRidesState extends State<AddRides> {
     });
   }
 
+  //slide moving
+
+  bool _bottomSheetVisible = true; // Initial state of bottom sheet
+  double _expandedHeight = 300;
+  double _collapsedHeight = 150;
+
+  void _toggleBottomSheetVisibility() {
+    setState(() {
+      _bottomSheetVisible = !_bottomSheetVisible;
+    });
+  }
+
+  Widget _buildBottomSheet() {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      height: _bottomSheetVisible ? _collapsedHeight : _expandedHeight,
+      child: GestureDetector(
+        onTap: _toggleBottomSheetVisibility,
+        child: Container(
+          decoration: BoxDecoration(
+            color: colorsFile.cardColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(50.0),
+              topRight: Radius.circular(50.0),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: WantToBook(
+              "Your proposed rides",
+              "Want to add a ride? Press + button!",
+              _showSearchRides,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _height = MediaQuery.of(context).size.height;
@@ -472,38 +498,45 @@ class _AddRidesState extends State<AddRides> {
           children: [
             // Background Photo
             Positioned(
-  child:
-   Container(
-    
-    child: MapsGoogleExample(),),
-),
-
-
-            // Content on top of the background
-            Visibility(
-              visible: bottomSheetVisible,
-              child: Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    height: 150,
-                    decoration: const BoxDecoration(
-                      color: colorsFile.cardColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50.0),
-                        topRight: Radius.circular(50.0),
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      // controller: scrollController,
-                      child: WantToBook(
-                          "Your proposed rides",
-                          "Want to add a ride? Press + button!",
-                          _showSearchRides),
-                    ),
-                  )),
+              child: Container(
+                child: MapsGoogleExample(),
+              ),
             ),
+
+//             Content on top of the background
+//             Visibility(
+//               visible: bottomSheetVisible,
+//               child: Positioned(
+//                   left: 0,
+//                   right: 0,
+//                   bottom: 0,
+//                   child: Container(
+//                     height: 150,
+//                     decoration: const BoxDecoration(
+//                       color: colorsFile.cardColor,
+//                       borderRadius: BorderRadius.only(
+//                         topLeft: Radius.circular(50.0),
+//                         topRight: Radius.circular(50.0),
+//                       ),
+//                     ),
+//                     child: SingleChildScrollView(
+//                       // controller: scrollController,
+//                       child: WantToBook(
+//                           "Your proposed rides",
+//                           "Want to add a ride? Press + button!",
+//                           _showSearchRides),
+//                     ),
+//                   )),
+//             ),
+
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _buildBottomSheet(),
+            ),
+
+
             Visibility(
               visible: isSearchPoPupVisible,
               child: Positioned(
@@ -635,15 +668,15 @@ class _AddRidesState extends State<AddRides> {
                                                 color: Colors.white,
                                               ),
                                               child: InkWell(
-                                                onTap: (){
+                                                onTap: () {
                                                   //Calling the map functions
                                                   print("Ontaped");
                                                   GoogleMapController?
-                                                  map_controller;
+                                                      map_controller;
                                                   google_map_for_origin(
                                                       map_controller);
                                                 },
-                                                child:const Icon(
+                                                child: const Icon(
                                                   Icons.place,
                                                   color: colorsFile.icons,
                                                 ),
@@ -694,7 +727,8 @@ class _AddRidesState extends State<AddRides> {
                                         Expanded(
                                             child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: '${destination_address_name}',
+                                            labelText:
+                                                '${destination_address_name}',
                                             prefixIcon: Container(
                                               width: 37.0,
                                               height: 37.0,
@@ -710,9 +744,9 @@ class _AddRidesState extends State<AddRides> {
                                                 color: Colors.white,
                                               ),
                                               child: InkWell(
-                                                onTap: (){
+                                                onTap: () {
                                                   GoogleMapController?
-                                                  map_controller1;
+                                                      map_controller1;
                                                   google_map_for_origin1(
                                                       map_controller1);
                                                 },
@@ -756,7 +790,8 @@ class _AddRidesState extends State<AddRides> {
                                               child: Container(
                                                   height: 45,
                                                   width: 45,
-                                                  decoration: const BoxDecoration(
+                                                  decoration:
+                                                      const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: Colors.white60,
                                                   ),
