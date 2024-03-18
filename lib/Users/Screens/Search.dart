@@ -16,6 +16,7 @@ import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:search_map_place_updated/search_map_place_updated.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -328,44 +329,8 @@ class _SearchState extends State<Search> {
   }
 
 
-  //slide moving
 
-  bool _bottomSheetVisible = true; // Initial state of bottom sheet
-  double _expandedHeight = 300;
-  double _collapsedHeight = 150;
 
-  void _toggleBottomSheetVisibility() {
-    setState(() {
-      _bottomSheetVisible = !_bottomSheetVisible;
-    });
-  }
-
-  Widget _buildBottomSheet() {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      height: _bottomSheetVisible ? _collapsedHeight : _expandedHeight,
-      child: GestureDetector(
-        onTap: _toggleBottomSheetVisibility,
-        child: Container(
-          decoration: BoxDecoration(
-            color: colorsFile.cardColor,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(50.0),
-              topRight: Radius.circular(50.0),
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: WantToBook(
-              "Your proposed rides",
-              "Want to add a ride? Press + button!",
-              _showSearchRides,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
 
 
@@ -496,13 +461,28 @@ class _SearchState extends State<Search> {
             //   ),
             // ),
 
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _buildBottomSheet(),
+            SlidingUpPanel(
+              maxHeight: _height * 0.99,
+              minHeight: _height * 0.2,
+              panel: SingleChildScrollView(
+                child: WantToBook(
+                  "Your proposed rides",
+                  "Want to add a ride? Press + button!",
+                  _showSearchRides,
+                ),
+              ),
+              body: Container(), // Your body widget here
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(50.0),
+                topRight: Radius.circular(50.0),
+              ),
+              color: colorsFile.cardColor,
+              onPanelSlide: (double pos) {
+                setState(() {
+                  bottomSheetVisible = pos > 0.5;
+                });
+              },
             ),
-
 
             Visibility(
               visible: isSearchPoPupVisible,

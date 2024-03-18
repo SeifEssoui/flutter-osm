@@ -6,6 +6,7 @@ import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
+import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:osmflutter/mapOsm/search_example.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -13,7 +14,11 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:clay_containers/widgets/clay_container.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 
-
+void main() {
+  runApp(MaterialApp(
+    home: MapsGoogleExample(),
+  ));
+}
 
 class OldMainExample extends StatefulWidget {
   OldMainExample({Key? key}) : super(key: key);
@@ -62,16 +67,10 @@ class _MainExampleState extends State<OldMainExample>
 
   Future<void> getCurrentLocation() async {
     print("--------Inside the get location method --------");
-    LocationPermission permission;
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.deniedForever) {
-        return Future.error('Location Not Available');
-      }
-    } else {
-      throw Exception('Error');
-    }
+
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((error, stackTrace) {});
 
     Position position = await Geolocator.getCurrentPosition();
 
