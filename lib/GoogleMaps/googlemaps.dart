@@ -1,7 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'dart:convert';
 
 void main() {
   runApp(MaterialApp(
@@ -17,15 +17,11 @@ class MapsGoogleExample extends StatefulWidget {
 }
 
 class _MapsGoogleExampleState extends State<MapsGoogleExample> {
-
-
   late GoogleMapController mapController;
-  //late LatLng currentLocation;
-  //For avoiding runtime error:
-  late LatLng currentLocation = LatLng(0.0, 0.0);
+  late LatLng currentLocation = LatLng(0.0, 0.0); // Initialize with default location
   Set<Marker> markers = {};
 
-  bool check = false;
+  bool loading = true;
 
   @override
   void initState() {
@@ -34,294 +30,73 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   }
 
   void getCurrentLocation() async {
-
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.deniedForever) {
-        return Future.error('Location Not Available');
-      }
-    } else {
-      throw Exception('Error');
-    }
-    Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      currentLocation = LatLng(position.latitude, position.longitude);
-      check = true;
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      // Handle location permissions denied
       setState(() {
-
+        loading = false;
       });
-      markers.add(
-        Marker(
-          markerId: MarkerId("currentLocation"),
-          position: currentLocation,
-          infoWindow: InfoWindow(
-            title: "Current Location",
-            onTap: () {
-              // Handle marker tap here
-            },
-          ),
-          icon: BitmapDescriptor.defaultMarker, // Use the default marker icon
-        ),
-      );
-    });
+    } else {
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        currentLocation = LatLng(position.latitude, position.longitude);
+        loading = false;
+      });
+      addMarker(currentLocation);
+    }
   }
 
-  String _loadNightStyle() {
+  void addMarker(LatLng position) {
+    markers.add(
+      Marker(
+        markerId: MarkerId("currentLocation"),
+        position: position,
+        infoWindow: InfoWindow(
+          title: "Current Location",
+          onTap: () {
+            // Handle marker tap here
+          },
+        ),
+        icon: BitmapDescriptor.defaultMarker, // Use the default marker icon
+      ),
+    );
+  }
+
+  Future<String> _loadNightStyle() async {
     // Load the JSON style file from assets
-    String nightStyle = '''
-    [
-    {
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#1d2c4d"
-        }
-      ]
-    },
-    {
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#8ec3b9"
-        }
-      ]
-    },
-    {
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "color": "#1a3646"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.country",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {
-          "color": "#4b6878"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.land_parcel",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#64779e"
-        }
-      ]
-    },
-    {
-      "featureType": "administrative.province",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {
-          "color": "#4b6878"
-        }
-      ]
-    },
-    {
-      "featureType": "landscape.man_made",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {
-          "color": "#334e87"
-        }
-      ]
-    },
-    {
-      "featureType": "landscape.natural",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#023e58"
-        }
-      ]
-    },
-    {
-      "featureType": "poi",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#283d6a"
-        }
-      ]
-    },
-    {
-      "featureType": "poi",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#6f9ba5"
-        }
-      ]
-    },
-    {
-      "featureType": "poi",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "color": "#1d2c4d"
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#023e58"
-        }
-      ]
-    },
-    {
-      "featureType": "poi.park",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#3C7680"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#304a7d"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#98a5be"
-        }
-      ]
-    },
-    {
-      "featureType": "road",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "color": "#1d2c4d"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#2c6675"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry.stroke",
-      "stylers": [
-        {
-          "color": "#255763"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#b0d5ce"
-        }
-      ]
-    },
-    {
-      "featureType": "road.highway",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "color": "#023e58"
-        }
-      ]
-    },
-    {
-      "featureType": "transit",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#98a5be"
-        }
-      ]
-    },
-    {
-      "featureType": "transit",
-      "elementType": "labels.text.stroke",
-      "stylers": [
-        {
-          "color": "#1d2c4d"
-        }
-      ]
-    },
-    {
-      "featureType": "transit.line",
-      "elementType": "geometry.fill",
-      "stylers": [
-        {
-          "color": "#283d6a"
-        }
-      ]
-    },
-    {
-      "featureType": "transit.station",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#3a4762"
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "geometry",
-      "stylers": [
-        {
-          "color": "#0e1626"
-        }
-      ]
-    },
-    {
-      "featureType": "water",
-      "elementType": "labels.text.fill",
-      "stylers": [
-        {
-          "color": "#4e6d70"
-        }
-      ]
-    }
-  ]
-    ''';
-    return nightStyle;
+    String nightStyleJson = await DefaultAssetBundle.of(context).loadString('assets/themes/aubergine_style.json');
+    return nightStyleJson;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: check==true ?  GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: currentLocation,
-          zoom: 14.5,
-        ),
-        onMapCreated: (controller) {
-          mapController = controller;
-          mapController.setMapStyle(_loadNightStyle());
-        },
-        markers: markers,
-      ) : Center(child: CircularProgressIndicator(color: Colors.white,),),
+      body: loading
+          ? Center(child: CircularProgressIndicator(color: Colors.white))
+          : FutureBuilder<String>(
+              future: _loadNightStyle(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: currentLocation,
+                      zoom: 14.5,
+                    ),
+                    onMapCreated: (controller) {
+                      mapController = controller;
+                      mapController.setMapStyle(snapshot.data!);
+                    },
+                    markers: markers,
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error loading night style'));
+                } else {
+                  return Center(child: CircularProgressIndicator(color: Colors.white));
+                }
+              },
+            ),
     );
   }
 }
