@@ -211,7 +211,7 @@ class _ChooseRideState extends State<ChooseRide> {
                                         ),
                                         SizedBox(height: 13),
                                         Text(
-                                          "Foulen Ben Foulen",
+                                          "12 Foulen Ben Foulen",
                                           textAlign: TextAlign.center,
                                           style: GoogleFonts.montserrat(
                                             fontWeight: FontWeight.bold,

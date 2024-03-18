@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -485,6 +487,7 @@ class _AddRidesState extends State<AddRides>
             // Visibility widget for search popup
 
             // SlidingUpPanel
+
             SlidingUpPanel(
               maxHeight: _height * 0.99,
               minHeight: _height * 0.2,
@@ -507,6 +510,8 @@ class _AddRidesState extends State<AddRides>
                 });
               },
             ),
+
+
 
             Visibility(
               visible: isSearchPoPupVisible,
