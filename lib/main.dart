@@ -16,7 +16,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.transparent,
       ),
-     
       home:  Login(),
       //home:  ChooseRole(),
     );

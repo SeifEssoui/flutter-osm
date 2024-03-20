@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,7 +11,12 @@ void main() {
 }
 
 class MapsGoogleExample extends StatefulWidget {
-  MapsGoogleExample({Key? key}) : super(key: key);
+
+
+  MapsGoogleExample(
+      {Key? key,
+      })
+      : super(key: key);
 
   @override
   _MapsGoogleExampleState createState() => _MapsGoogleExampleState();
@@ -18,10 +24,13 @@ class MapsGoogleExample extends StatefulWidget {
 
 class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   late GoogleMapController mapController;
-  late LatLng currentLocation = LatLng(0.0, 0.0); // Initialize with default location
+  late LatLng currentLocation =
+      LatLng(0.0, 0.0); // Initialize with default location
+
   Set<Marker> markers = {};
 
   bool loading = true;
+
 
   @override
   void initState() {
@@ -66,9 +75,13 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
 
   Future<String> _loadNightStyle() async {
     // Load the JSON style file from assets
-    String nightStyleJson = await DefaultAssetBundle.of(context).loadString('assets/themes/aubergine_style.json');
+    String nightStyleJson = await DefaultAssetBundle.of(context)
+        .loadString('assets/themes/aubergine_style.json');
     return nightStyleJson;
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +106,8 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error loading night style'));
                 } else {
-                  return Center(child: CircularProgressIndicator(color: Colors.white));
+                  return Center(
+                      child: CircularProgressIndicator(color: Colors.white));
                 }
               },
             ),

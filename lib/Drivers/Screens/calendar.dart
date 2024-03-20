@@ -76,350 +76,366 @@ class _CalendarState extends State<Calendar> {
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
-            minHeight: MediaQuery.of(context).size.height  * 0.4,
-            panel: Container(
-              height: 350,
-              decoration: BoxDecoration(
-                color: colorsFile.cardColor,
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(50.0),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: colorsFile.ProfileIcon,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(50.0),
-                      ),
+            minHeight: MediaQuery.of(context).size.height  * 0.34,
+            panel: Column(
+              children: [
+                Container(
+                  height: 350,
+                  decoration: const BoxDecoration(
+                    color: colorsFile.cardColor,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(50.0),
                     ),
-                    child: Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(30, 12, 5, 10),
-                            child: Text(
-                              "Passengers",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.white,
-                              ),
-                            ),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 121,
+                        decoration: const BoxDecoration(
+                          color: colorsFile.ProfileIcon,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(50.0),
                           ),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        child: Column(
                           children: [
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedTime = '07:20';
-                                });
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '07:20',
-                                    style: TextStyle(
-                                      color: selectedTime == '07:20' ? Colors.white : Colors.grey,
-                                      decoration: selectedTime == '07:20' ? TextDecoration.underline : TextDecoration.none,
-                                    ),
-                                  ),
-                                  if (selectedTime == '07:20') Icon(Icons.edit, color: Colors.white),
-                                ],
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: 60,
+                              height: 7,
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: colorsFile.background,
                               ),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  selectedTime = '18:30';
-                                });
-                              },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '18:30',
-                                    style: TextStyle(
-                                      color: selectedTime == '18:30' ? Colors.white : Colors.grey,
-                                      decoration: selectedTime == '18:30' ? TextDecoration.underline : TextDecoration.none,
-                                    ),
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(30, 0, 5, 10),
+                                child: Text(
+                                  "Passengers",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
                                   ),
-                                  if (selectedTime == '18:30') Icon(Icons.edit, color: Colors.white),
-                                ],
+                                ),
                               ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedTime = '07:20';
+                                    });
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '07:20',
+                                        style: TextStyle(
+                                          color: selectedTime == '07:20' ? Colors.white : Colors.grey,
+                                          decoration: selectedTime == '07:20' ? TextDecoration.underline : TextDecoration.none,
+                                        ),
+                                      ),
+                                      if (selectedTime == '07:20') const Icon(Icons.edit, color: Colors.white),
+                                    ],
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedTime = '18:30';
+                                    });
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        '18:30',
+                                        style: TextStyle(
+                                          color: selectedTime == '18:30' ? Colors.white : Colors.grey,
+                                          decoration: selectedTime == '18:30' ? TextDecoration.underline : TextDecoration.none,
+                                        ),
+                                      ),
+                                      if (selectedTime == '18:30') const Icon(Icons.edit, color: Colors.white),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  selectedTime == '07:20'
-                      ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      ),
+                      selectedTime == '07:20'
+                          ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(5.0, 10, 5, 10),
-                                  child: Text(
-                                    "Home",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      color: colorsFile.icons,
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
+                                child: Row(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.fromLTRB(5.0, 10, 5, 10),
+                                      child: Text(
+                                        "Home",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: colorsFile.icons,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    "--->",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      color: colorsFile.icons,
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: Text(
+                                        "--->",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: colorsFile.icons,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    "EY Tower",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                      color: colorsFile.icons,
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
+                                      child: Text(
+                                        "EY Tower",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13,
+                                          color: colorsFile.icons,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    Container(
+                                      child: Image.asset(
+                                        'assets/images/seat.png',
+                                        width: 15,
+                                        height: 15,
+                                        color: colorsFile.done,
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Image.asset(
+                                        'assets/images/seat.png',
+                                        width: 15,
+                                        height: 15,
+                                        color: colorsFile.done,
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Image.asset(
+                                        'assets/images/seat.png',
+                                        width: 15,
+                                        height: 15,
+                                        color: colorsFile.done,
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Image.asset(
+                                        'assets/images/seat.png',
+                                        width: 15,
+                                        height: 15,
+                                        color: colorsFile.done,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Container(
-                                  child: Image.asset(
-                                    'assets/images/seat.png',
-                                    width: 15,
-                                    height: 15,
-                                    color: colorsFile.done,
-                                  ),
-                                ),
-                                Container(
-                                  child: Image.asset(
-                                    'assets/images/seat.png',
-                                    width: 15,
-                                    height: 15,
-                                    color: colorsFile.done,
-                                  ),
-                                ),
-                                Container(
-                                  child: Image.asset(
-                                    'assets/images/seat.png',
-                                    width: 15,
-                                    height: 15,
-                                    color: colorsFile.done,
-                                  ),
-                                ),
-                                Container(
-                                  child: Image.asset(
-                                    'assets/images/seat.png',
-                                    width: 15,
-                                    height: 15,
-                                    color: colorsFile.done,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(5.0, 5, 18, 5),
-                            child: Text(
-                              "07 : 20",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                color: colorsFile.detailColor,
                               ),
-                            ),
+                              const Padding(
+                                padding: EdgeInsets.fromLTRB(5.0, 5, 18, 5),
+                                child: Text(
+                                  "07 : 20",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: colorsFile.detailColor,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      child: const Icon(
+                                        Icons.delete,
+                                        color: colorsFile.skyBlue,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Container(
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: colorsFile.skyBlue,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(5.0, 5, 5, 5),
-                            child: Row(
-                              children: [
-                                Container(
-                                  child: Icon(
-                                    Icons.delete,
-                                    color: colorsFile.skyBlue,
-                                  ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              // First avatar
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPerson = people[0];
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: const AssetImage('assets/images/homme1.jpg'),
+                                      radius: 30,
+                                      backgroundColor: selectedPerson == people[0] ? Colors.blue : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (selectedPerson == people[0])
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            selectedPerson!.name,
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard),
+                                          ),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.phone),
+                                              const SizedBox(width: 8),
+                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                  ],
                                 ),
-                                SizedBox(width: 2),
-                                Container(
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: colorsFile.skyBlue,
-                                  ),
+                              ),
+                              // Second avatar
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPerson = people[1];
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: const AssetImage('assets/images/homme2.jpg'),
+                                      radius: 30,
+                                      backgroundColor: selectedPerson == people[1] ? Colors.blue : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (selectedPerson == people[1])
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.phone),
+                                              const SizedBox(width: 8),
+                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              // Third avatar
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPerson = people[2];
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: const AssetImage('assets/images/femme1.jpg'),
+                                      radius: 30,
+                                      backgroundColor: selectedPerson == people[2] ? Colors.blue : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (selectedPerson == people[2])
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.phone),
+                                              const SizedBox(width: 8),
+                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              // Fourth avatar
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedPerson = people[3];
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: const AssetImage('assets/images/femme2.jpg'),
+                                      radius: 30,
+                                      backgroundColor: selectedPerson == people[3] ? Colors.blue : null,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (selectedPerson == people[3])
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(selectedPerson!.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.phone),
+                                              const SizedBox(width: 8),
+                                              Text(selectedPerson!.phoneNumber, style: const TextStyle(fontSize: 16)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                      SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // First avatar
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedPerson = people[0];
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: AssetImage('assets/images/homme1.jpg'),
-                                  radius: 30,
-                                  backgroundColor: selectedPerson == people[0] ? Colors.blue : null,
-                                ),
-                                SizedBox(height: 8),
-                                if (selectedPerson == people[0])
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        selectedPerson!.name,
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.phone),
-                                          SizedBox(width: 8),
-                                          Text(selectedPerson!.phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colorsFile.titleCard)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                          // Second avatar
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedPerson = people[1];
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: AssetImage('assets/images/homme2.jpg'),
-                                  radius: 30,
-                                  backgroundColor: selectedPerson == people[1] ? Colors.blue : null,
-                                ),
-                                SizedBox(height: 8),
-                                if (selectedPerson == people[1])
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(selectedPerson!.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.phone),
-                                          SizedBox(width: 8),
-                                          Text(selectedPerson!.phoneNumber, style: TextStyle(fontSize: 16)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                          // Third avatar
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedPerson = people[2];
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: AssetImage('assets/images/femme1.jpg'),
-                                  radius: 30,
-                                  backgroundColor: selectedPerson == people[2] ? Colors.blue : null,
-                                ),
-                                SizedBox(height: 8),
-                                if (selectedPerson == people[2])
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(selectedPerson!.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.phone),
-                                          SizedBox(width: 8),
-                                          Text(selectedPerson!.phoneNumber, style: TextStyle(fontSize: 16)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                          // Fourth avatar
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedPerson = people[3];
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: AssetImage('assets/images/femme2.jpg'),
-                                  radius: 30,
-                                  backgroundColor: selectedPerson == people[3] ? Colors.blue : null,
-                                ),
-                                SizedBox(height: 8),
-                                if (selectedPerson == people[3])
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(selectedPerson!.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.phone),
-                                          SizedBox(width: 8),
-                                          Text(selectedPerson!.phoneNumber, style: TextStyle(fontSize: 16)),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      )
+                          : const SizedBox(), // Placeholder, you can add content for '18:30' here
                     ],
-                  )
-                      : SizedBox(), // Placeholder, you can add content for '18:30' here
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
             body: Container(), // Your body widget here
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(50.0),
               topRight: Radius.circular(50.0),
             ),

@@ -19,6 +19,8 @@ import 'package:search_map_place_updated/search_map_place_updated.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
+import '../../GoogleMaps/driver_polyline_map.dart';
+
 class AddRides extends StatefulWidget {
   const AddRides({Key? key}) : super(key: key);
 
@@ -30,11 +32,20 @@ class _AddRidesState extends State<AddRides>
     with SingleTickerProviderStateMixin {
   //Google Maps For Home
 
+  bool check_map = true;
+
   //For home
 
   var origin_address_name = 'Home';
 
   void origin_address_method(dynamic newlat, dynamic newlng) async {
+    print("Our required lat and lng for Origin-polyline is: ");
+    poly1_lat=newlat;
+    poly1_lng=newlng;
+    print("Lat: ${poly1_lat} & Lng: ${poly1_lng} ");
+    setState(() {
+
+    });
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     origin_address_name =
@@ -175,6 +186,13 @@ class _AddRidesState extends State<AddRides>
   var destination_address_name = 'EV Tower';
 
   void destination_address_method(double newlat, double newlng) async {
+    print("Our required lat and lng for Destination-polyline is: ");
+    poly2_lat=newlat;
+    poly2_lng=newlng;
+    print("Lat: ${poly2_lat} & Lng: ${poly2_lng} ");
+    setState(() {
+
+    });
     List<Placemark> placemark = await placemarkFromCoordinates(newlat, newlng);
     setState(() {});
     destination_address_name =
@@ -293,6 +311,7 @@ class _AddRidesState extends State<AddRides>
   bool ridesIsVisible = false;
   late double _height;
   late double _width;
+  bool condition = true;
 
   List<DateTime> _selectedDates = [];
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -397,27 +416,19 @@ class _AddRidesState extends State<AddRides>
       });
   }
 
-
-
-  //animation
-
-
   @override
   void initState() {
     super.initState();
-
-
-
     lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
   }
 
-
-
-
   _showSearchRides() {
     setState(() {
+      print("object");
       isSearchPoPupVisible = true;
       bottomSheetVisible = false;
+      condition = false;
+      check_visible=false;
     });
   }
 
@@ -436,10 +447,16 @@ class _AddRidesState extends State<AddRides>
 
   //slide moving
 
-  bool _bottomSheetVisible = true; // Initial state of bottom sheet
+  bool _bottomSheetVisible = true;
   double _expandedHeight = 300;
   double _collapsedHeight = 150;
 
+  //Polylines LatLng
+
+  dynamic poly1_lat,poly1_lng;
+  dynamic poly2_lat,poly2_lng;
+
+  bool check_visible = true;
 
   @override
   Widget build(BuildContext context) {
@@ -479,38 +496,46 @@ class _AddRidesState extends State<AddRides>
             // Background Photo
             Positioned(
               child: Container(
-                child: MapsGoogleExample(),
+                child: check_map==true ? MapsGoogleExample():  DriverOnMap(poly_lat1: poly1_lat,poly_lng1: poly1_lng,poly_lat2: poly2_lat,poly_lng2: poly2_lng,),
               ),
             ),
 
+           // SlidingUpPanel
 
-            // Visibility widget for search popup
-
-            // SlidingUpPanel
-
-            SlidingUpPanel(
-              maxHeight: _height * 0.99,
-              minHeight: _height * 0.2,
-              panel: SingleChildScrollView(
-                child: WantToBook(
-                  "Your proposed rides",
-                  "Want to add a ride? Press + button!",
-                  _showSearchRides,
+            Visibility(
+              visible: check_visible,
+              child: SlidingUpPanel(
+                maxHeight: _height * 0.99,
+                minHeight: _height * 0.2,
+                panel: SingleChildScrollView(
+                  child: InkWell(
+                    onTap: () {
+                      print("sddasdasddasd");
+                      print(bottomSheetVisible);
+                    },
+                    child: WantToBook(
+                      "Your proposed rides",
+                      "Want to add a ride? Press + button!",
+                      _showSearchRides,
+                    ),
+                  ),
                 ),
+                body: Container(), // Your body widget here
+                borderRadius:const BorderRadius.only(
+                  topLeft: Radius.circular(50.0),
+                  topRight: Radius.circular(50.0),
+                ),
+                color: colorsFile.cardColor,
+                onPanelSlide: (double pos) {
+                  setState(() {
+                    print("dddddddd");
+                    bottomSheetVisible = pos > 0.5;
+                    print("sadasddsadds $bottomSheetVisible");
+                  });
+                },
+                isDraggable: condition,
               ),
-              body: Container(), // Your body widget here
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50.0),
-                topRight: Radius.circular(50.0),
-              ),
-              color: colorsFile.cardColor,
-              onPanelSlide: (double pos) {
-                setState(() {
-                  bottomSheetVisible = pos > 0.5;
-                });
-              },
             ),
-
 
 
             Visibility(
@@ -521,6 +546,8 @@ class _AddRidesState extends State<AddRides>
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
+                      print("Button Press");
+                      condition = true;
                       isSearchPoPupVisible = false;
                       bottomSheetVisible = true;
                     });
@@ -574,30 +601,33 @@ class _AddRidesState extends State<AddRides>
                               //Spacer(),
                               Container(
                                   child: RatingBar.builder(
-                                    initialRating: 3,
-                                    minRating: 1,
-                                    direction: Axis.horizontal,
-                                    itemCount: 4,
-                                    itemBuilder: (context, _) => Image.asset(
-                                      'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
-                                      width:
+                                initialRating: 3,
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                itemCount: 4,
+                                itemBuilder: (context, _) => Image.asset(
+                                  'assets/images/seat.png', // Replace 'assets/star_image.png' with your image path
+                                  width:
                                       10, // Adjust width and height as per your image size
-                                      height: 10,
-                                      color: colorsFile
-                                          .done, // You can also apply color to the image if needed
-                                    ),
-                                    onRatingUpdate: (rating) {
-                                      print(rating);
-                                    },
-                                  )),
+                                  height: 10,
+                                  color: colorsFile
+                                      .done, // You can also apply color to the image if needed
+                                ),
+                                onRatingUpdate: (rating) {
+                                  print(rating);
+                                },
+                              )),
                               //SizedBox(width: 15.0),
                               Container(
                                 margin: const EdgeInsets.only(top: 8),
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
+                                      print("close");
                                       isSearchPoPupVisible = false;
                                       bottomSheetVisible = true;
+                                      condition=true;
+                                      check_visible=true;
                                     });
                                   },
                                   child: const Icon(
@@ -627,55 +657,55 @@ class _AddRidesState extends State<AddRides>
                                       children: [
                                         Expanded(
                                             child: TextField(
-                                              decoration: InputDecoration(
-                                                hintText: "${origin_address_name}",
-                                                prefixIcon: Container(
-                                                  width: 37.0,
-                                                  height: 37.0,
-                                                  margin: const EdgeInsets.only(
-                                                      left: 5, right: 10),
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 2.0,
-                                                    ),
-                                                    color: Colors.white,
-                                                  ),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      //Calling the map functions
-                                                      print("Ontaped");
-                                                      GoogleMapController?
+                                          decoration: InputDecoration(
+                                            hintText: "${origin_address_name}",
+                                            prefixIcon: Container(
+                                              width: 37.0,
+                                              height: 37.0,
+                                              margin: const EdgeInsets.only(
+                                                  left: 5, right: 10),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2.0,
+                                                ),
+                                                color: Colors.white,
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  //Calling the map functions
+                                                  print("Ontaped");
+                                                  GoogleMapController?
                                                       map_controller;
-                                                      google_map_for_origin(
-                                                          map_controller);
-                                                    },
-                                                    child: const Icon(
-                                                      Icons.place,
-                                                      color: colorsFile.icons,
-                                                    ),
-                                                  ),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.white,
-                                                    width: 2.0,
-                                                  ),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.blue,
-                                                    width: 2.0,
-                                                  ),
+                                                  google_map_for_origin(
+                                                      map_controller);
+                                                },
+                                                child: const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
                                                 ),
                                               ),
-                                            )),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.blue,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                          ),
+                                        )),
                                         const SizedBox(width: 5),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -702,72 +732,77 @@ class _AddRidesState extends State<AddRides>
                                       children: [
                                         Expanded(
                                             child: TextField(
-                                              decoration: InputDecoration(
-                                                labelText:
+                                          decoration: InputDecoration(
+                                            labelText:
                                                 '${destination_address_name}',
-                                                prefixIcon: Container(
-                                                  width: 37.0,
-                                                  height: 37.0,
-                                                  margin: const EdgeInsets.only(
-                                                      left: 5, right: 10),
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Colors.white,
-                                                      width: 2.0,
-                                                    ),
-                                                    color: Colors.white,
-                                                  ),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      GoogleMapController?
+                                            prefixIcon: Container(
+                                              width: 37.0,
+                                              height: 37.0,
+                                              margin: const EdgeInsets.only(
+                                                  left: 5, right: 10),
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 2.0,
+                                                ),
+                                                color: Colors.white,
+                                              ),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  GoogleMapController?
                                                       map_controller1;
-                                                      google_map_for_origin1(
-                                                          map_controller1);
-                                                    },
-                                                    child: const Icon(
-                                                      Icons.place,
-                                                      color: colorsFile.icons,
-                                                    ),
-                                                  ),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.white,
-                                                    width: 2.0,
-                                                  ),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                                  borderSide: const BorderSide(
-                                                    color: Colors.blue,
-                                                    width: 2.0,
-                                                  ),
+                                                  google_map_for_origin1(
+                                                      map_controller1);
+                                                },
+                                                child: const Icon(
+                                                  Icons.place,
+                                                  color: colorsFile.icons,
                                                 ),
                                               ),
-                                            )),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.white,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30.0),
+                                              borderSide: const BorderSide(
+                                                color: Colors.blue,
+                                                width: 2.0,
+                                              ),
+                                            ),
+                                          ),
+                                        )),
                                         const SizedBox(
                                             width:
-                                            10), // Adjust the space between the two icons
+                                                10), // Adjust the space between the two icons
                                         Padding(
                                           padding:
-                                          const EdgeInsets.only(left: 8.0),
+                                              const EdgeInsets.only(left: 8.0),
                                           child: GestureDetector(
                                               onTap: () {
                                                 setState(() {
                                                   listSearchBottomSheet = true;
                                                   isSearchPoPupVisible = false;
                                                 });
+                                                print("Navigate to polylines");
+                                                setState(() {
+                                                  check_map=false;
+                                                  print("------Check value is now false - means that Driver_polyline method will be called-------");
+                                                });
                                               },
                                               child: Container(
                                                   height: 45,
                                                   width: 45,
                                                   decoration:
-                                                  const BoxDecoration(
+                                                      const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: Colors.white60,
                                                   ),
@@ -778,7 +813,7 @@ class _AddRidesState extends State<AddRides>
                                                       width: 35,
                                                       borderRadius: 40,
                                                       curveType:
-                                                      CurveType.concave,
+                                                          CurveType.concave,
                                                       depth: 30,
                                                       spread: 2,
                                                       child: const Center(
@@ -805,6 +840,7 @@ class _AddRidesState extends State<AddRides>
                 ),
               ),
             ),
+
             Visibility(
               visible: listSearchBottomSheet,
               child: Positioned(
@@ -812,24 +848,20 @@ class _AddRidesState extends State<AddRides>
                   right: 0,
                   bottom: 0,
                   child: Container(
-                    height: 350,
+                    height: 630,
                     decoration: const BoxDecoration(
-                      color: colorsFile.cardColor,
+                      // color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      //controller: scrollController,
-                        child: ProposedRides(_showMyRides, showRide)),
+                    child: ProposedRides(_showMyRides, showRide),
                   )),
             ),
           ],
         ),
       ),
     );
-
-
   }
 }

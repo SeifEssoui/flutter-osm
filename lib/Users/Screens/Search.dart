@@ -303,6 +303,8 @@ class _SearchState extends State<Search> {
   bool ridesIsVisible = false;
   late double _height;
   late double _width;
+  bool condition = true;
+
   @override
   void initState() {
     super.initState();
@@ -312,6 +314,7 @@ class _SearchState extends State<Search> {
     setState(() {
       isSearchPoPupVisible=true;
       bottomSheetVisible=false;
+      condition = false;
     });
   }
   _showMyRides() {
@@ -465,10 +468,15 @@ class _SearchState extends State<Search> {
               maxHeight: _height * 0.99,
               minHeight: _height * 0.2,
               panel: SingleChildScrollView(
-                child: WantToBook(
-                  "Your proposed rides",
-                  "Want to add a ride? Press + button!",
-                  _showSearchRides,
+                child: InkWell(
+                  onTap: () {
+                    print("sddasdasddasd");
+                  },
+                  child: WantToBook(
+                    "Your proposed rides",
+                    "Want to add a ride? Press + button!",
+                    _showSearchRides,
+                  ),
                 ),
               ),
               body: Container(), // Your body widget here
@@ -479,9 +487,12 @@ class _SearchState extends State<Search> {
               color: colorsFile.cardColor,
               onPanelSlide: (double pos) {
                 setState(() {
+                  print("dddddddd");
                   bottomSheetVisible = pos > 0.5;
+                  print("sadasddsadds $bottomSheetVisible");
                 });
               },
+              isDraggable: condition,
             ),
 
             Visibility(
@@ -492,6 +503,7 @@ class _SearchState extends State<Search> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
+                      condition = true;
                       isSearchPoPupVisible = false;
                       bottomSheetVisible=true;
                     });
@@ -533,10 +545,10 @@ class _SearchState extends State<Search> {
                                   setState(() {
                                     isSearchPoPupVisible = false;
                                     bottomSheetVisible=true;
-
+                                    condition=true;
                                   });
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.close,
                                   color: Color(0xFFFFFFFF), // White color
                                   size: 25.0,
@@ -740,18 +752,15 @@ height: 50,
                   right: 0,
                   bottom: 0,
                   child: Container(
-                    height: 300,
-                    decoration: BoxDecoration(
-                      color: colorsFile.cardColor,
+                 //   height: 310,
+                    decoration: const BoxDecoration(
+                      //color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      //controller: scrollController,
-                      child:ChooseRide(_showMyRides,showRide)
-                    ),
+                    child: ChooseRide(_showMyRides,showRide),
                   )
               ),
             ),
@@ -762,18 +771,15 @@ height: 50,
                   right: 0,
                   bottom: 0,
                   child: Container(
-                    height: 300,
-                    decoration: BoxDecoration(
+                  //  height: 300,
+                    decoration: const BoxDecoration(
                       color: colorsFile.cardColor,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(50.0),
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      //controller: scrollController,
-                        child:MyRides(),
-                    ),
+                    child: MyRides(),
                   )
               ),
             ),
