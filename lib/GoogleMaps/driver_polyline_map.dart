@@ -1,140 +1,9 @@
-// import 'dart:async';
-// import 'dart:math';
-// import 'package:flutter/material.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-//
-// class DriverOnMap extends StatefulWidget {
-//   final double poly_lat1, poly_lng1, poly_lat2, poly_lng2;
-//
-//   const DriverOnMap({
-//     Key? key,
-//     required this.poly_lat1,
-//     required this.poly_lng1,
-//     required this.poly_lat2,
-//     required this.poly_lng2,
-//   }) : super(key: key);
-//
-//   @override
-//   _DriverOnMapState createState() => _DriverOnMapState();
-// }
-//
-// class _DriverOnMapState extends State<DriverOnMap> {
-//   Completer<GoogleMapController> _controller = Completer();
-//   Set<Polyline> _polyline = {};
-//   Set<Marker> _markers = {};
-//   late LatLngBounds _bounds;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _createPolylines();
-//
-//     print("Total KM between two points is = ${calculateDistance(widget.poly_lat1, widget.poly_lng1, widget.poly_lat2, widget.poly_lng2)}");
-//   }
-//
-//   void _createPolylines() {
-//     setState(() {
-//       _polyline.add(Polyline(
-//         polylineId: PolylineId('route'),
-//         visible: true,
-//         points: [
-//           LatLng(widget.poly_lat1, widget.poly_lng1),
-//           LatLng(widget.poly_lat2, widget.poly_lng2),
-//         ],
-//         color: Colors.white, // Changed polyline color to white
-//         width: 5,
-//       ));
-//
-//       // Add markers
-//       _markers.add(
-//         Marker(
-//           markerId: MarkerId('start'),
-//           position: LatLng(widget.poly_lat1, widget.poly_lng1),
-//           infoWindow: InfoWindow(title: 'Start'),
-//           icon: BitmapDescriptor.defaultMarker,
-//         ),
-//       );
-//       _markers.add(
-//         Marker(
-//           markerId: MarkerId('end'),
-//           position: LatLng(widget.poly_lat2, widget.poly_lng2),
-//           infoWindow: InfoWindow(title: 'End'),
-//           icon: BitmapDescriptor.defaultMarker,
-//         ),
-//       );
-//     });
-//   }
-//
-//
-//   Future<String> _loadNightStyle() async {
-//     // Load the JSON style file from assets
-//     String nightStyleJson = await DefaultAssetBundle.of(context)
-//         .loadString('assets/themes/aubergine_style.json');
-//     return nightStyleJson;
-//   }
-//
-//   //Method for calculating Total KM
-//   double calculateDistance(lat1, lon1, lat2, lon2){
-//     var p = 0.017453292519943295;
-//     var a = 0.5 - cos((lat2 - lat1) * p)/2 +
-//         cos(lat1 * p) * cos(lat2 * p) *
-//             (1 - cos((lon2 - lon1) * p))/2;
-//     return 12742 * asin(sqrt(a));
-//   }
-//
-//
-//
-//   late GoogleMapController mapController;
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body:
-//       FutureBuilder<String>(
-//         future: _loadNightStyle(),
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             return GoogleMap(
-//               initialCameraPosition: CameraPosition(
-//                 target: LatLng(
-//                         (widget.poly_lat1 + widget.poly_lat2) / 2,
-//                         (widget.poly_lng1 + widget.poly_lng2) / 2,
-//                       ),
-//                 zoom: 14.5,
-//               ),
-//               onMapCreated: (controller) {
-//                 _controller.complete(controller);
-//                 mapController = controller;
-//                 mapController.setMapStyle(snapshot.data!);
-//               },
-//               polylines: _polyline,
-//               markers: _markers,
-//                 myLocationEnabled: true,
-//                 mapType: MapType.normal,
-//                 buildingsEnabled: true,
-//                 onTap: (_) {},
-//             );
-//           } else if (snapshot.hasError) {
-//             return Center(child: Text('Error loading night style'));
-//           } else {
-//             return Center(
-//                 child: CircularProgressIndicator(color: Colors.white));
-//           }
-//         },
-//       ),
-//
-//
-//     );
-//   }
-// }
-//
-
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:osmflutter/constant/colorsFile.dart';
 
 class DriverOnMap extends StatefulWidget {
   final double poly_lat1, poly_lng1, poly_lat2, poly_lng2;
@@ -209,9 +78,13 @@ class _DriverOnMapState extends State<DriverOnMap> {
             icon: BitmapDescriptor.defaultMarker,
           ),
         );
+
       });
     }
   }
+
+
+
 
   List<LatLng> _decodePolyline(String encoded) {
     List<LatLng> points = [];
@@ -259,25 +132,60 @@ class _DriverOnMapState extends State<DriverOnMap> {
         future: _loadNightStyle(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                  (widget.poly_lat1 + widget.poly_lat2) / 2,
-                  (widget.poly_lng1 + widget.poly_lng2) / 2,
+            return Stack(
+              children: [
+                GoogleMap(
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                      (widget.poly_lat1 + widget.poly_lat2) / 2,
+                      (widget.poly_lng1 + widget.poly_lng2) / 2,
+                    ),
+                    zoom: 14.5,
+                  ),
+                  onMapCreated: (controller) {
+                    _controller.complete(controller);
+                    mapController = controller;
+                    mapController.setMapStyle(snapshot.data);
+                  },
+                  polylines: _polyline,
+                  markers: _markers,
+                  // myLocationEnabled: true,
+                  mapType: MapType.normal,
+                  buildingsEnabled: true,
+                  onTap: (_) {},
                 ),
-                zoom: 14.5,
-              ),
-              onMapCreated: (controller) {
-                _controller.complete(controller);
-                mapController =controller;
-                mapController.setMapStyle(snapshot.data);
-              },
-              polylines: _polyline,
-              markers: _markers,
-              myLocationEnabled: true,
-              mapType: MapType.normal,
-              buildingsEnabled: true,
-              onTap: (_) {},
+                Positioned(
+                  top:
+                      16.0, // Adjust this value to position the zoom buttons as needed
+                  right:
+                      16.0, // Adjust this value to position the zoom buttons as needed
+                  child: Column(
+                    children: [
+                      FloatingActionButton(
+                        mini: true,
+                        backgroundColor: colorsFile.backgroundNvavigaton,
+                        onPressed: () {
+                          mapController.animateCamera(
+                            CameraUpdate.zoomIn(),
+                          );
+                        },
+                        child: Icon(Icons.add),
+                      ),
+                      SizedBox(height: 16.0),
+                      FloatingActionButton(
+                        backgroundColor: colorsFile.backgroundNvavigaton,
+                        mini: true,
+                        onPressed: () {
+                          mapController.animateCamera(
+                            CameraUpdate.zoomOut(),
+                          );
+                        },
+                        child: Icon(Icons.remove),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           } else if (snapshot.hasError) {
             return Center(child: Text('Error loading night style'));

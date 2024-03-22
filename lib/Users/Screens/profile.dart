@@ -7,7 +7,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 
 import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../../GoogleMaps/driver_polyline_map.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -21,7 +24,45 @@ class _ProfileState extends State<Profile> {
   late double _width;
   Color baseColor = const Color(0xFFf2f2f2);
 
-  bool? bottomSheetVisible =true;
+  bool bottomSheetVisible =true;
+  bool check = true;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("Inside the insit state \n getting the shared preferences values");
+    getshared();
+  }
+
+  dynamic sp_poly_lat1,sp_poly_lng1,sp_poly_lat2,sp_poly_lng2;
+  getshared()async
+  {
+    final prefs = await sharedpreferences.get_poly_lat1();
+    sp_poly_lat1 = prefs;
+    print("Poly_lat1 = ${sp_poly_lat1}");
+
+    final prefs1 = await sharedpreferences.get_poly_lng1();
+    sp_poly_lng1 = prefs1;
+    print("Poly_lng1 = ${sp_poly_lng1}");
+
+    final prefs2 = await sharedpreferences.get_poly_lat2();
+    sp_poly_lat2 = prefs2;
+    print("Poly_lat2 = ${sp_poly_lat2}");
+
+    final prefs3 = await sharedpreferences.get_poly_lng2();
+    sp_poly_lng2 = prefs3;
+    print("Poly_lng2 = ${sp_poly_lng2}");
+
+
+    if(sp_poly_lng1!=null || sp_poly_lat1!=null || sp_poly_lng2!=null || sp_poly_lat2!=null)
+      {
+        setState(() {
+          check=false;
+        });
+      }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +93,16 @@ class _ProfileState extends State<Profile> {
       body: Stack(
         children: [
           // Background Photo
-          MapsGoogleExample(),
+         // MapsGoogleExample(),
+          check == true
+              ? MapsGoogleExample()
+              : DriverOnMap(
+            poly_lat1: sp_poly_lat1,
+            poly_lng1: sp_poly_lng1,
+            poly_lat2: sp_poly_lat2,
+            poly_lng2: sp_poly_lng2,
+
+          ),
 
           SlidingUpPanel(
             maxHeight: MediaQuery.of(context).size.height * 0.8,

@@ -4,7 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/mapOsm/home_example.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../../GoogleMaps/driver_polyline_map.dart';
 
 class Person {
   final String name;
@@ -37,9 +40,41 @@ class _CalendarState extends State<Calendar> {
       Person(name: 'foulena Foulenia', phoneNumber: '96224774'),
       Person(name: 'Mariem Ali', phoneNumber: '58121211'),
     ];
+    print("Inside the insit state \n getting the shared preferences values");
+    getshared();
   }
 
-  //updated code by MA
+
+  bool check=true;
+  dynamic sp_poly_lat1,sp_poly_lng1,sp_poly_lat2,sp_poly_lng2;
+  getshared()async
+  {
+    final prefs = await sharedpreferences.get_poly_lat1();
+    sp_poly_lat1 = prefs;
+    print("Poly_lat1 = ${sp_poly_lat1}");
+
+    final prefs1 = await sharedpreferences.get_poly_lng1();
+    sp_poly_lng1 = prefs1;
+    print("Poly_lng1 = ${sp_poly_lng1}");
+
+    final prefs2 = await sharedpreferences.get_poly_lat2();
+    sp_poly_lat2 = prefs2;
+    print("Poly_lat2 = ${sp_poly_lat2}");
+
+    final prefs3 = await sharedpreferences.get_poly_lng2();
+    sp_poly_lng2 = prefs3;
+    print("Poly_lng2 = ${sp_poly_lng2}");
+
+
+    if(sp_poly_lng1!=null || sp_poly_lat1!=null || sp_poly_lng2!=null || sp_poly_lat2!=null) {
+      setState(() {
+        check = false;
+      });
+    }
+  }
+
+
+
 
 
   @override
@@ -69,8 +104,19 @@ class _CalendarState extends State<Calendar> {
       ),
       body: Stack(
         children: [
+
           // Background Photo
-          MapsGoogleExample(),
+
+          //MapsGoogleExample(),
+
+          check == true
+              ? MapsGoogleExample()
+              : DriverOnMap(
+            poly_lat1: sp_poly_lat1,
+            poly_lng1: sp_poly_lng1,
+            poly_lat2: sp_poly_lat2,
+            poly_lng2: sp_poly_lng2,
+          ),
 
           //Updated Code
 
@@ -446,9 +492,6 @@ class _CalendarState extends State<Calendar> {
               });
             },
           ),
-
-
-
 
 
         ],

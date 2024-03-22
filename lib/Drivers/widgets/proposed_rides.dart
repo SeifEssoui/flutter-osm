@@ -28,10 +28,8 @@ class _ProposedRidesState extends State<ProposedRides> {
     _height = MediaQuery.of(context).size.height;
     _width = MediaQuery.of(context).size.width;
 
-    return
-
-      SlidingUpPanel(
-      maxHeight: _height * 0.7,
+    return SlidingUpPanel(
+      maxHeight: _height * 0.35,
       minHeight: _height * 0.35,
       panel:
       Stack(
