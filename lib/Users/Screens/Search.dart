@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:osmflutter/GoogleMaps/passenger_polyline_map.dart';
 import 'package:osmflutter/Users/BottomSheet/MyRides.dart';
 import 'package:osmflutter/Users/BottomSheet/want_to_book.dart';
 import 'package:osmflutter/Users/widgets/chooseRide.dart';
@@ -434,35 +435,8 @@ class _SearchState extends State<Search> {
         child: Stack(
           children: [
             // Background Photo
-            Positioned(
 
-              child: MapsGoogleExample(),
-
-            ),
-
-            // Content on top of the background
-            // Visibility(
-            //   visible: bottomSheetVisible,
-            //   child: Positioned(
-            //     left: 0,
-            //     right: 0,
-            //     bottom: 0,
-            //     child: Container(
-            //       height: 150,
-            //       decoration: BoxDecoration(
-            //         color: colorsFile.cardColor,
-            //         borderRadius: BorderRadius.only(
-            //           topLeft: Radius.circular(50.0),
-            //           topRight: Radius.circular(50.0),
-            //         ),
-            //       ),
-            //       child: SingleChildScrollView(
-            //        // controller: scrollController,
-            //         child: WantToBook("", "Want to Book a ride ? press + botton!",_showSearchRides),
-            //       ),
-            //     )
-            //   ),
-            // ),
+            PassengerPolylineMap(condition: true,),
 
             SlidingUpPanel(
               maxHeight: _height * 0.99,
@@ -474,7 +448,7 @@ class _SearchState extends State<Search> {
                   },
                   child: WantToBook(
                     "Your proposed rides",
-                    "Want to add a ride? Press + button!",
+                    "Want to book a ride? Press + button!",
                     _showSearchRides,
                   ),
                 ),

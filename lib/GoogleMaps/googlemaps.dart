@@ -36,19 +36,22 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
   void initState() {
     super.initState();
     getCurrentLocation();
+    print("------------------------Getting current location------------------------G");
   }
 
   void getCurrentLocation() async {
     LocationPermission permission;
-    permission = await Geolocator.checkPermission();
+    permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       // Handle location permissions denied
+      print("------------------------DENIED");
       setState(() {
         loading = false;
       });
     } else {
       Position position = await Geolocator.getCurrentPosition();
+      print("------------------------ACCEPT");
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
         loading = false;

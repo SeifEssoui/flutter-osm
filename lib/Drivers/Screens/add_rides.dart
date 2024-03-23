@@ -1127,14 +1127,35 @@ class _AddRidesState extends State<AddRides>
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Total Duration = ${totalDurationInMinutes} Minutes ",
-                              style: TextStyle(fontSize: 10),
+                             Padding(
+                              padding:  EdgeInsets.only(top: 6,bottom: 2),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  InkWell(
+                                      onTap: ()
+                                      {
+                                        box_check=false;
+                                        setState(() {
+
+                                        });
+                                      },
+                                      child: Icon(Icons.close,size: 18))
+                                ],
+                              ),
                             ),
-                            Text("Total Kilometer = ${total_km} km",
-                                style: const TextStyle(fontSize: 10))
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Total Duration = ${totalDurationInMinutes} Minutes ",
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                                Text("Total Kilometer = ${total_km} km",
+                                    style: const TextStyle(fontSize: 10))
+                              ],
+                            ),
                           ],
                         ),
                       )),
