@@ -116,24 +116,28 @@
 
 //Updated coded by MA
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:ui' as ui;
+import 'package:http/http.dart' as http;
 
 import 'package:osmflutter/constant/colorsFile.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 
-class PassengerPolylineMap extends StatefulWidget {
+import 'driver_polyline_map.dart';
+
+class PassengerMap extends StatefulWidget {
   bool condition;
-   PassengerPolylineMap({Key? key,required this.condition}) : super(key: key);
-
+   PassengerMap({Key? key,required this.condition}) : super(key: key);
   @override
-  _PassengerPolylineMapState createState() => _PassengerPolylineMapState();
+  _PassengerMapState createState() => _PassengerMapState();
 }
 
-class _PassengerPolylineMapState extends State<PassengerPolylineMap> {
+class _PassengerMapState extends State<PassengerMap> {
   late GoogleMapController mapController;
   late LatLng currentLocation =
   LatLng(0.0, 0.0); // Initialize with default location
@@ -148,9 +152,14 @@ class _PassengerPolylineMapState extends State<PassengerPolylineMap> {
     getCurrentLocation();
   }
 
+
+
+  Completer<GoogleMapController> _controller = Completer();
+
+
   void getCurrentLocation() async {
     LocationPermission permission;
-    permission = await Geolocator.checkPermission();
+    permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
       // Handle location permissions denied
@@ -340,10 +349,14 @@ class _PassengerPolylineMapState extends State<PassengerPolylineMap> {
                     zoom: 14.5,
                   ),
                   onMapCreated: (controller) {
+                    _controller.complete(controller);
                     mapController = controller;
                     mapController.setMapStyle(snapshot.data!);
                   },
                   markers: markers,
+                  onTap: (_){
+
+                  },
                 ),
                 Positioned(
                   top:

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -52,8 +53,11 @@ class _MapsGoogleExampleState extends State<MapsGoogleExample> {
     } else {
       Position position = await Geolocator.getCurrentPosition();
       print("------------------------ACCEPT");
+      await sharedpreferences.setlat(position.latitude);
+      await sharedpreferences.setlng(position.longitude);
       setState(() {
         currentLocation = LatLng(position.latitude, position.longitude);
+
         loading = false;
       });
       addMarker(currentLocation);

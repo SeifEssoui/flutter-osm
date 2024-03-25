@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:osmflutter/GoogleMaps/pass_route_map.dart';
 import 'package:osmflutter/constant/colorsFile.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,10 @@ import 'package:osmflutter/GoogleMaps/googlemaps.dart';
 import 'package:osmflutter/mapOsm/home_example.dart';
 import 'package:osmflutter/shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../GoogleMaps/driver_polyline_map.dart';
-import '../../GoogleMaps/passenger_polyline_map.dart';
+import '../../GoogleMaps/passenger_map.dart';
 
 class pass_profile extends StatefulWidget {
   const pass_profile({super.key});
@@ -25,11 +27,69 @@ class _pass_profileState extends State<pass_profile> {
   @override
   void initState() {
     // TODO: implement initState
+    print("inside the initstate");
+    get_shared();
     super.initState();
   }
 
 
+  bool check_shared_data = true;
+
+  dynamic sp_data_poly_lat1,
+      sp_data_poly_lng1,
+      sp_data_poly_lat2,
+      sp_data_poly_lng2;
+  get_shared() async {
+    print("Getting the shared data");
+
+    final prefs = await sharedpreferences.get_pass_poly_lat1();
+    sp_data_poly_lat1 = prefs;
+    print("Poly_lat1 = ${sp_data_poly_lat1}");
+
+    final prefs1 = await sharedpreferences.get_pass_poly_lng1();
+    sp_data_poly_lng1 = prefs1;
+    print("Poly_lng1 = ${sp_data_poly_lng1}");
+
+    final prefs2 = await sharedpreferences.get_pass_poly_lat2();
+    sp_data_poly_lat2 = prefs2;
+    print("Poly_lat2 = ${sp_data_poly_lat2}");
+
+    final prefs3 = await sharedpreferences.get_pass_poly_lng2();
+    sp_data_poly_lng2 = prefs3;
+    print("Poly_lng2 = ${sp_data_poly_lng2}");
+
+    setState(() {});
+
+    if (sp_data_poly_lat1 == null ||
+        sp_data_poly_lng1 == null ||
+        sp_data_poly_lat2 == null ||
+        sp_data_poly_lng2 == null) {
+      print("Shared data values are null");
+      check_shared_data = true;
+      setState(() {
+
+      });
+    } else {
+      print("Shared data values are not null");
+      check_shared_data = false;
+      setState(() {});
+    }
+
+  }
+
   bool bottomSheetVisible = true;
+
+
+  // Function to launch the phone dialer
+  Future<void> _launchPhoneDialer(String phoneNumber) async {
+    String url = 'tel:$phoneNumber';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
 
 
 
@@ -64,8 +124,8 @@ class _pass_profileState extends State<pass_profile> {
           // Background Photo
           // MapsGoogleExample(),
 
-          PassengerPolylineMap(condition: false,),
-
+          check_shared_data==true ?
+          PassengerMap(condition: false) : pass_route_map(lat1: sp_data_poly_lat1, lng1: sp_data_poly_lng1, lat2: sp_data_poly_lat2, lng2: sp_data_poly_lng2),
 
 
           SlidingUpPanel(
@@ -262,17 +322,27 @@ class _pass_profileState extends State<pass_profile> {
                                             const SizedBox(height: 10),
                                             Row(
                                               children: [
-                                                const Icon(
-                                                  Icons.phone,
-                                                  color: colorsFile.detailColor,
+                                                InkWell(
+                                                  onTap: (){
+                                                    _launchPhoneDialer('55555555');
+                                                  },
+                                                  child: const Icon(
+                                                    Icons.phone,
+                                                    color: colorsFile.detailColor,
+                                                  ),
                                                 ),
                                                 const SizedBox(width: 10),
-                                                Text(
-                                                  "55 555 555",
-                                                  style: GoogleFonts.montserrat(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                    color: colorsFile.titleCard,
+                                                InkWell(
+                                                  onTap: (){
+                                                    _launchPhoneDialer('55555555');
+                                                  },
+                                                  child: Text(
+                                                    "55 555 555",
+                                                    style: GoogleFonts.montserrat(
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 12,
+                                                      color: colorsFile.titleCard,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
