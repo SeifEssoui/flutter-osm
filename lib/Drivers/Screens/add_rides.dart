@@ -1113,7 +1113,7 @@ class _AddRidesState extends State<AddRides>
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   child: GlassmorphicContainer(
-                      height: _height * 0.1,
+                      height: _height * 0.18,
                       width: _width * 0.4,
                       borderRadius: 5,
                       blur: 2,
