@@ -479,72 +479,77 @@ class _AddRidesState extends State<AddRides>
   TimeOfDay _selectedTime = TimeOfDay.now();
   double _rating = 0;
 
-  void _selectDateRange(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white, // Change background color here
-          content: Container(
-            width: 300,
-            height: 500,
-            child: Column(
-              children: [
-                Expanded(
-                    child: SfDateRangePicker(
+void _selectDateRange(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: colorsFile.icons, // Change background color to blue
+        content: Container(
+          width: 300,
+          height: 500,
+          child: Column(
+            children: [
+              Expanded(
+                child: SfDateRangePicker(
                   view: DateRangePickerView.month,
                   headerStyle: const DateRangePickerHeaderStyle(
                     textStyle: TextStyle(color: colorsFile.icons),
                   ),
                   monthViewSettings: const DateRangePickerMonthViewSettings(
-                      weekendDays: [7, 6],
-                      dayFormat: 'EEE',
-                      viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                          textStyle: TextStyle(color: colorsFile.icons)),
-                      showTrailingAndLeadingDates: true),
+                    weekendDays: [7, 6],
+                    dayFormat: 'EEE',
+                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                      textStyle: TextStyle(color: colorsFile.icons),
+                    ),
+                    showTrailingAndLeadingDates: true,
+                  ),
                   monthCellStyle: const DateRangePickerMonthCellStyle(
                     textStyle: TextStyle(color: colorsFile.icons),
                   ),
-                )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            colorsFile.buttonRole), // Change the color here
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: colorsFile.icons),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add your submit logic here
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            colorsFile.buttonRole), // Change the color here
-                      ),
-                      child: const Text(
-                        'Submit',
-                        style: TextStyle(color: colorsFile.icons),
-                      ),
-                    ),
-                  ],
+                  selectionMode: DateRangePickerSelectionMode.multiple, // or .multiRange
                 ),
-              ],
-            ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Dismiss the dialog
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          colorsFile.buttonRole), // Change the color here
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: colorsFile.icons),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Add your submit logic here
+                      Navigator.of(context).pop(); // Dismiss the dialog
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          colorsFile.buttonRole), // Change the color here
+                    ),
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(color: colorsFile.icons),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -647,6 +652,12 @@ class _AddRidesState extends State<AddRides>
       ridesIsVisible = !ridesIsVisible;
     });
   }
+
+  void _scheduleMyRides() {
+  setState(() {
+    // Perform any necessary state updates or functionality when the calendar icon is clicked
+  });
+}
 
   //Map new Theme
   Future<String> _loadNightStyle() async {
@@ -929,8 +940,10 @@ class _AddRidesState extends State<AddRides>
                                               onTap: () {},
                                               child: const Center(
                                                 child: Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.pink,
+                                                  Icons.favorite_outline,
+                                                  // Icons.favorite,
+                                                  //     color: colorsFile.detailColor,
+                                                  // color: Colors.pink,
                                                   size: 40,
                                                 ),
                                               )),
@@ -1008,58 +1021,27 @@ class _AddRidesState extends State<AddRides>
                                         )),
                                         const SizedBox(
                                             width:
-                                                10), // Adjust the space between the two icons
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
+                                                8), // Adjust the space between the two icons
+                                       
+                                              Padding(
+                                          padding: const EdgeInsets.all(8.0),
                                           child: GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  listSearchBottomSheet = true;
-                                                  isSearchPoPupVisible = false;
-                                                  box_check = true;
-                                                });
-                                                print("Navigate to polylines");
-                                                setState(() {
-                                                  check_map = false;
-                                                  shared_data();
-                                                  print(
-                                                      "displaying the shared preferences values");
-                                                  print(
-                                                      "SP_Poly_Lat1 = ${sp_poly_lat1}");
-                                                  print(
-                                                      "------Check value is now false - means that Driver_polyline method will be called-------");
-                                                });
-                                              },
-                                              child: Container(
-                                                  height: 45,
-                                                  width: 45,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: Colors.white60,
-                                                  ),
-                                                  child: Center(
-                                                    child: ClayContainer(
-                                                      color: Colors.white,
-                                                      height: 35,
-                                                      width: 35,
-                                                      borderRadius: 40,
-                                                      curveType:
-                                                          CurveType.concave,
-                                                      depth: 30,
-                                                      spread: 2,
-                                                      child: const Center(
-                                                        child: Icon(
-                                                          size: 30.0,
-                                                          Icons.swap_vert,
-                                                          color: colorsFile
-                                                              .buttonIcons,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ))),
-                                        ), // Adjust the space between the two icons
+                                              onTap: () {},
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.swap_vert,
+                                                  // Icons.favorite,
+                                                  //     color: colorsFile.detailColor,
+                                                  // color: Colors.pink,
+                                                  size: 40,
+                                                ),
+                                              )),
+                                        ),
+
+                                              
+                                              
+                                                  
+                                         // Adjust the space between the two icons
                                       ],
                                     ),
                                   ),
@@ -1096,7 +1078,7 @@ class _AddRidesState extends State<AddRides>
                                         ),
                                         const SizedBox(
                                             width:
-                                                10), // Adjust the space between the two icons
+                                                80), // Adjust the space between the two icons
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 8.0),
@@ -1178,7 +1160,8 @@ class _AddRidesState extends State<AddRides>
                         topRight: Radius.circular(50.0),
                       ),
                     ),
-                    child: ProposedRides(_showMyRides, showRide),
+                    child: ProposedRides(_showMyRides, showRide, ),
+
                   )),
             ),
 
@@ -1250,5 +1233,16 @@ class _AddRidesState extends State<AddRides>
         ),
       ),
     );
+  }
+
+
+  
+  void scheduleRide() {
+    setState(() {
+      isSearchPoPupVisible = true;
+      bottomSheetVisible = false;
+      listSearchBottomSheet = false;
+      box_check = false;
+    });
   }
 }
